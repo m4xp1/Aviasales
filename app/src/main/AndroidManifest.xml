@@ -4,6 +4,7 @@
     package="one.xcorp.aviasales">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:name=".Application"
@@ -24,5 +25,9 @@
         </activity>
 
         <activity android:name=".screen.ticket.search.TicketSearchActivity" />
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
     </application>
 </manifest>
