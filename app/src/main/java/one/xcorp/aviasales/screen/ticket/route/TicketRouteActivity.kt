@@ -4,10 +4,10 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import one.xcorp.aviasales.R
 
-class RouteActivity : AppCompatActivity() {
+class TicketRouteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_route)
+        setContentView(R.layout.activity_ticket_route)
     }
 }
