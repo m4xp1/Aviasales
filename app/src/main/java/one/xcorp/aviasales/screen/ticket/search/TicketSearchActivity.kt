@@ -37,8 +37,7 @@ class TicketSearchActivity : AppCompatActivity() {
         map = googleMap
         map.uiSettings.isMapToolbarEnabled = false
 
-        addAirportMarker(departureAirport)
-        addAirportMarker(destinationAirport)
+        addInitialMapMarkers()
 
         val latLngBounds = newLatLngBounds(
             getInitialMapExtent(),
@@ -54,6 +53,11 @@ class TicketSearchActivity : AppCompatActivity() {
         .include(departureAirport.location)
         .include(destinationAirport.location)
         .build()
+
+    private fun addInitialMapMarkers() {
+        addAirportMarker(departureAirport)
+        addAirportMarker(destinationAirport)
+    }
 
     private fun addAirportMarker(airport: AirportModel) = with(airport) {
         map.addMarker(airportMarkerFactory.createOptions(iata, location))
