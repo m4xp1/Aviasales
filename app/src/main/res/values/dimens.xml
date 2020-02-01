@@ -2,4 +2,7 @@
 <resources>
     <dimen name="margin">16dp</dimen>
     <dimen name="padding">8dp</dimen>
+
+    <!-- TicketSearchActivity -->
+    <dimen name="ticket_search_activity_map_extent_padding">64dp</dimen>
 </resources>
