@@ -56,7 +56,7 @@ class TicketSearchActivity : AppCompatActivity() {
         .build()
 
     private fun addAirportMarker(airport: AirportModel) = with(airport) {
-        map.addMarker(airportMarkerFactory.create(iata, location))
+        map.addMarker(airportMarkerFactory.createOptions(iata, location))
     }
 
     companion object {

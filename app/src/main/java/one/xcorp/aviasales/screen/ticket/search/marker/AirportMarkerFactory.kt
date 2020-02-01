@@ -28,7 +28,7 @@ class AirportMarkerFactory @Inject constructor(
 
     private val measureSpec: Int = makeMeasureSpec(0, UNSPECIFIED)
 
-    fun create(label: CharSequence, position: LatLng): MarkerOptions {
+    fun createOptions(label: CharSequence, position: LatLng): MarkerOptions {
         view.text = label
         view.refresh()
 
