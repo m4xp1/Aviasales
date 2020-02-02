@@ -29,7 +29,9 @@ fun Marker.animate(route: List<LatLng>): ValueAnimator {
             position = positions[index].interpolate(route.last(), animation.animatedFraction)
         } else {
             position = positions[index].interpolate(positions[index + 1], fraction)
-            rotation = position.bearingTo(positions[index + 1])
+            if (fraction != 1f) { // keep latest bearing
+                rotation = position.bearingTo(positions[index + 1])
+            }
         }
     }
 
