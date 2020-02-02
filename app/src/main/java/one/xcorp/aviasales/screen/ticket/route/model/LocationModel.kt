@@ -4,8 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirportModel(
-    val city: String,
-    val iata: String,
-    val location: LocationModel
+data class LocationModel(
+    val latitude: Double,
+    val longitude: Double
 ) : Parcelable
