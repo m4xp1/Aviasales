@@ -39,6 +39,7 @@ class TicketSearchActivity : AppCompatActivity() {
     private lateinit var planeMarker: Marker
 
     private var planeMarkerAnimator: ValueAnimator? = null
+    private var planeMarkerAnimatorPlayTime: Long = 0L
 
     private val dotLineGap by lazy {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_gap).toFloat()
@@ -58,6 +59,20 @@ class TicketSearchActivity : AppCompatActivity() {
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(::onMapReady)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        planeMarkerAnimatorPlayTime =
+            savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(
+            STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME,
+            planeMarkerAnimator?.currentPlayTime ?: planeMarkerAnimatorPlayTime
+        )
     }
 
     private fun onMapReady(map: GoogleMap) {
@@ -150,7 +165,11 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private fun startPlaneMarkerAnimation() {
         val duration = resources.getInteger(ticket_search_activity_average_animation_duration)
-        animatePlaneMarker(SECONDS.toMillis(duration.toLong()), LinearOutSlowInInterpolator())
+        animatePlaneMarker(
+            SECONDS.toMillis(duration.toLong()),
+            LinearOutSlowInInterpolator(),
+            planeMarkerAnimatorPlayTime
+        )
     }
 
     private fun endPlaneMarkerAnimation() {
@@ -158,13 +177,18 @@ class TicketSearchActivity : AppCompatActivity() {
         animatePlaneMarker(SECONDS.toMillis(duration.toLong()), FastOutLinearInInterpolator())
     }
 
-    private fun animatePlaneMarker(duration: Long, interpolator: Interpolator) {
+    private fun animatePlaneMarker(
+        duration: Long,
+        interpolator: Interpolator,
+        playTime: Long = 0L
+    ) {
         planeMarkerAnimator?.cancel()
 
         val destinationLocation = destinationAirport.location.toLatLng()
         planeMarkerAnimator = planeMarker.animate(destinationLocation).apply {
             setDuration(duration)
             setInterpolator(interpolator)
+            currentPlayTime = playTime
             start()
         }
     }
@@ -177,6 +201,8 @@ class TicketSearchActivity : AppCompatActivity() {
 
         private const val KEY_DEPARTURE_AIRPORT = "departure_airport"
         private const val KEY_DESTINATION_AIRPORT = "destination_airport"
+
+        private const val STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME = "plane_marker_animator_play_time"
 
         fun newIntent(
             context: Context,
