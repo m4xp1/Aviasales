@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.TextView
 import androidx.core.view.drawToBitmap
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import one.xcorp.aviasales.R
@@ -34,7 +34,7 @@ class AirportMarkerFactory @Inject constructor(
 
         return MarkerOptions()
             .position(position)
-            .icon(BitmapDescriptorFactory.fromBitmap(view.drawToBitmap()))
+            .icon(fromBitmap(view.drawToBitmap()))
             .anchor(0.5f, 0.5f)
     }
 
