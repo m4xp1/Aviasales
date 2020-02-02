@@ -35,6 +35,7 @@ class AirportMarkerFactory @Inject constructor(
         return MarkerOptions()
             .position(position)
             .icon(BitmapDescriptorFactory.fromBitmap(view.drawToBitmap()))
+            .anchor(0.5f, 0.5f)
     }
 
     private fun View.refresh() {
