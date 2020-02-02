@@ -9,16 +9,25 @@ import com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromResource
 import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
+import com.google.maps.android.ui.IconGenerator
 import one.xcorp.aviasales.R
+import one.xcorp.aviasales.R.attr.markerTextAppearance
+import one.xcorp.aviasales.R.drawable.airport_marker_background
+import one.xcorp.aviasales.R.style.MarkerTextAppearance
+import one.xcorp.aviasales.extension.getThemeAttribute
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
-import one.xcorp.aviasales.screen.ticket.search.marker.AirportMarkerFactory
 
 class TicketSearchActivity : AppCompatActivity() {
 
-    private val airportMarkerFactory by lazy { AirportMarkerFactory(layoutInflater) }
+    private lateinit var departureAirport: AirportModel
+    private lateinit var destinationAirport: AirportModel
+
+    private lateinit var googleMap: GoogleMap
+    private lateinit var planeMarker: Marker
 
     private val dotLineGap by lazy {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_gap).toFloat()
@@ -27,12 +36,6 @@ class TicketSearchActivity : AppCompatActivity() {
     private val dotLineWidth by lazy {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_width).toFloat()
     }
-
-    private lateinit var departureAirport: AirportModel
-    private lateinit var destinationAirport: AirportModel
-
-    private lateinit var googleMap: GoogleMap
-    private lateinit var planeMarker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,7 +51,10 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private fun onMapReady(map: GoogleMap) {
         googleMap = map.apply {
-            uiSettings.isMapToolbarEnabled = false
+            uiSettings.apply {
+                isCompassEnabled = false
+                isMapToolbarEnabled = false
+            }
             setMapStyle(loadRawResourceStyle(applicationContext, R.raw.google_map_style))
         }
 
@@ -88,11 +94,20 @@ class TicketSearchActivity : AppCompatActivity() {
         googleMap.moveCamera(cameraUpdate)
     }
 
-    private fun addAirportMarker(airport: AirportModel): Marker = with(airport) {
-        val markerOptions = airportMarkerFactory
-            .createOptions(iata, location.toLatLng())
+    private fun addAirportMarker(airport: AirportModel): Marker {
+        val iconGenerator = IconGenerator(this).apply {
+            setContentPadding(0, 0, 0, 0)
+            setTextAppearance(getThemeAttribute(markerTextAppearance, MarkerTextAppearance))
+            setBackground(getDrawable(airport_marker_background))
+        }
+
+        val markerOptions = MarkerOptions()
+            .position(airport.location.toLatLng())
+            .icon(fromBitmap(iconGenerator.makeIcon(airport.iata)))
+            .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_MARKER)
-        googleMap.addMarker(markerOptions)
+
+        return googleMap.addMarker(markerOptions)
     }
 
     private fun addPlaneRoute(departureLocation: LatLng, destinationLocation: LatLng): Polyline {
@@ -103,6 +118,7 @@ class TicketSearchActivity : AppCompatActivity() {
             .pattern(listOf(Gap(dotLineGap), Dot()))
             .width(dotLineWidth)
             .zIndex(Z_INDEX_GRAPHIC)
+
         return googleMap.addPolyline(polylineOptions)
     }
 
@@ -112,6 +128,7 @@ class TicketSearchActivity : AppCompatActivity() {
             .icon(fromResource(R.drawable.ic_plane))
             .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_ANIMATED_MARKER)
+
         return googleMap.addMarker(markerOptions)
     }
 
