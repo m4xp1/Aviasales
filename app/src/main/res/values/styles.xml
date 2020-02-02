@@ -19,7 +19,7 @@
         <item name="android:minHeight">?attr/actionBarSize</item>
     </style>
 
-    <style name="MarkerTextAppearance" parent="TextAppearance.MaterialComponents.Subtitle1">
+    <style name="MarkerTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">?android:textColorPrimaryInverse</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textAllCaps">true</item>
