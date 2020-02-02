@@ -64,6 +64,7 @@ class TicketSearchActivity : AppCompatActivity() {
         googleMap = map.apply {
             uiSettings.apply {
                 isCompassEnabled = false
+                isRotateGesturesEnabled = false
                 isMapToolbarEnabled = false
             }
             setMapStyle(loadRawResourceStyle(applicationContext, R.raw.google_map_style))
