@@ -7,4 +7,6 @@
     <dimen name="ticket_search_activity_map_extent_padding">64dp</dimen>
     <dimen name="ticket_search_activity_map_route_gap">5.5dp</dimen>
     <dimen name="ticket_search_activity_map_route_width">4.5dp</dimen>
+    <integer name="ticket_search_activity_average_animation_duration">40</integer>
+    <integer name="ticket_search_activity_final_animation_duration">2</integer>
 </resources>
