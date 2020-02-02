@@ -17,6 +17,7 @@ import one.xcorp.aviasales.R
 import one.xcorp.aviasales.R.attr.markerTextAppearance
 import one.xcorp.aviasales.R.drawable.airport_marker_background
 import one.xcorp.aviasales.R.style.MarkerTextAppearance
+import one.xcorp.aviasales.extension.bearingTo
 import one.xcorp.aviasales.extension.getThemeAttribute
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
@@ -65,6 +66,7 @@ class TicketSearchActivity : AppCompatActivity() {
     private fun setInitialMapMarkers(): LatLngBounds {
         val departureLocation = departureAirport.location.toLatLng()
         val destinationLocation = destinationAirport.location.toLatLng()
+        val bearing = departureLocation.bearingTo(destinationLocation)
 
         val pointsSet = mutableSetOf<LatLng>()
 
@@ -74,7 +76,7 @@ class TicketSearchActivity : AppCompatActivity() {
             .apply { pointsSet.add(position) }
         addAirportMarker(destinationAirport)
             .apply { pointsSet.add(position) }
-        planeMarker = addPlaneMarker(departureLocation)
+        planeMarker = addPlaneMarker(departureLocation, bearing)
             .apply { pointsSet.add(position) }
 
         val boundsBuilder = LatLngBounds.builder()
@@ -122,9 +124,10 @@ class TicketSearchActivity : AppCompatActivity() {
         return googleMap.addPolyline(polylineOptions)
     }
 
-    private fun addPlaneMarker(location: LatLng): Marker {
+    private fun addPlaneMarker(location: LatLng, bearing: Float): Marker {
         val markerOptions = MarkerOptions()
             .position(location)
+            .rotation(bearing)
             .icon(fromResource(R.drawable.ic_plane))
             .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_ANIMATED_MARKER)
