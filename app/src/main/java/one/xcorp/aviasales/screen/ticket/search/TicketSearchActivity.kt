@@ -21,22 +21,20 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromResource
 import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
-import com.google.maps.android.ui.IconGenerator
 import one.xcorp.aviasales.R
-import one.xcorp.aviasales.R.attr.markerTextAppearance
-import one.xcorp.aviasales.R.drawable.airport_marker_background
 import one.xcorp.aviasales.R.integer.ticket_search_activity_average_animation_duration
 import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_duration
-import one.xcorp.aviasales.R.style.MarkerTextAppearance
 import one.xcorp.aviasales.extension.animate
 import one.xcorp.aviasales.extension.bearingTo
-import one.xcorp.aviasales.extension.getThemeAttribute
 import one.xcorp.aviasales.extension.rootView
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
+import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
 import java.util.concurrent.TimeUnit.SECONDS
 
 class TicketSearchActivity : AppCompatActivity() {
+
+    private val airportIconGenerator by lazy { AirportIconGenerator(this) }
 
     private lateinit var departureAirport: AirportModel
     private lateinit var destinationAirport: AirportModel
@@ -158,15 +156,9 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun addAirportMarker(airport: AirportModel): Marker {
-        val iconGenerator = IconGenerator(this).apply {
-            setContentPadding(0, 0, 0, 0)
-            setTextAppearance(getThemeAttribute(markerTextAppearance, MarkerTextAppearance))
-            setBackground(getDrawable(airport_marker_background))
-        }
-
         val markerOptions = MarkerOptions()
             .position(airport.location.toLatLng())
-            .icon(fromBitmap(iconGenerator.makeIcon(airport.iata)))
+            .icon(fromBitmap(airportIconGenerator.makeIcon(airport.iata)))
             .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_MARKER)
 
