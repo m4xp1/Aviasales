@@ -6,6 +6,7 @@
         <item name="android:windowBackground">@color/window_background</item>
         <item name="colorAccent">@color/accent</item>
         <item name="textInputStyle">@style/TextInputLayout</item>
+        <item name="materialButtonStyle">@style/Button</item>
         <item name="markerTextAppearance">@style/MarkerTextAppearance</item>
         <item name="markerBackgroundColor">@color/marker_background</item>
     </style>
@@ -25,6 +26,8 @@
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:textColorHint">?android:attr/textColorHint</item>
     </style>
+
+    <style name="Button" parent="@style/Widget.MaterialComponents.Button" />
 
     <style name="MarkerTextAppearance" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textColor">?android:textColorPrimaryInverse</item>

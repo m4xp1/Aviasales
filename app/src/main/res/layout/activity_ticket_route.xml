@@ -44,4 +44,14 @@
             android:inputType="textCapSentences"
             android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/findButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_x0_5"
+        android:text="@string/ticket_route_activity_find_button"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/destinationView" />
 </androidx.constraintlayout.widget.ConstraintLayout>
