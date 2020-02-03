@@ -27,6 +27,7 @@
         android:ellipsize="none"
         android:gravity="center"
         android:maxLength="3"
+        android:minWidth="68dp"
         android:singleLine="true"
         android:textAppearance="?attr/markerTextAppearance"
         tools:text="LED" />
