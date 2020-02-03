@@ -8,4 +8,9 @@ data class AirportModel(
     val fullName: String,
     val iata: String,
     val location: LocationModel
-) : Parcelable
+) : Parcelable {
+
+    override fun toString(): String {
+        return fullName
+    }
+}
