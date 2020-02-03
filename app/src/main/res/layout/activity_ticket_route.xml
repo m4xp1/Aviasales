@@ -28,7 +28,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.google.android.material.textview.MaterialAutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
@@ -39,7 +39,7 @@
                     android:nextFocusDown="@+id/destinationView">
 
                     <requestFocus />
-                </androidx.appcompat.widget.AppCompatEditText>
+                </com.google.android.material.textview.MaterialAutoCompleteTextView>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -51,7 +51,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/departureView">
 
-                <androidx.appcompat.widget.AppCompatEditText
+                <com.google.android.material.textview.MaterialAutoCompleteTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
