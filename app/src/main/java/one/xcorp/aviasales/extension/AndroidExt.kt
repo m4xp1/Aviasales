@@ -29,8 +29,10 @@ fun TextInputLayout.showError(@StringRes resId: Int) {
 }
 
 fun TextInputLayout.hideError() {
-    isErrorEnabled = false
-    error = null
+    if (isErrorEnabled) {
+        isErrorEnabled = false
+        error = null
+    }
 }
 
 private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
