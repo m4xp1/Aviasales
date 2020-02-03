@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin"
+        android:layout_margin="@dimen/indent_x2"
         app:cardCornerRadius="@dimen/card_corner_radius"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -18,7 +18,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="@dimen/margin">
+            android:layout_margin="@dimen/indent_x2">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/departureView"
@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
-                    android:drawablePadding="@dimen/padding"
+                    android:drawablePadding="@dimen/indent_x1"
                     android:hint="@string/ticket_route_activity_departure_hint"
                     android:imeOptions="actionNext|flagNoExtractUi"
                     android:inputType="textCapSentences"
@@ -48,7 +48,7 @@
                 android:id="@+id/destinationView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_x0_5"
+                android:layout_marginTop="@dimen/indent_x1"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/departureView">
@@ -58,7 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
-                    android:drawablePadding="@dimen/padding"
+                    android:drawablePadding="@dimen/indent_x1"
                     android:hint="@string/ticket_route_activity_destination_hint"
                     android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="textCapSentences"
@@ -69,7 +69,7 @@
                 android:id="@+id/findButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/margin_x0_5"
+                android:layout_marginTop="@dimen/indent_x1"
                 android:text="@string/ticket_route_activity_find_button"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"

@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="margin">16dp</dimen>
-    <dimen name="margin_x0_5">8dp</dimen>
-    <dimen name="padding">8dp</dimen>
+    <dimen name="indent_x2">16dp</dimen>
+    <dimen name="indent_x1">8dp</dimen>
     <dimen name="card_corner_radius">8dp</dimen>
 
     <!-- TicketSearchActivity -->
