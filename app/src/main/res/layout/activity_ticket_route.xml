@@ -33,10 +33,13 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
                     android:hint="@string/ticket_route_activity_departure_hint"
-                    android:imeOptions="actionNext"
+                    android:imeOptions="actionNext|flagNoExtractUi"
                     android:inputType="textCapSentences"
                     android:maxLines="1"
-                    android:nextFocusDown="@+id/destinationView" />
+                    android:nextFocusDown="@+id/destinationView">
+
+                    <requestFocus />
+                </androidx.appcompat.widget.AppCompatEditText>
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -53,7 +56,7 @@
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
                     android:hint="@string/ticket_route_activity_destination_hint"
-                    android:imeOptions="actionDone"
+                    android:imeOptions="actionDone|flagNoExtractUi"
                     android:inputType="textCapSentences"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
