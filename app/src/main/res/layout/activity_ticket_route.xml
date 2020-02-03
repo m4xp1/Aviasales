@@ -29,6 +29,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <com.google.android.material.textview.MaterialAutoCompleteTextView
+                    android:id="@+id/departureEdit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
@@ -52,6 +53,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/departureView">
 
                 <com.google.android.material.textview.MaterialAutoCompleteTextView
+                    android:id="@+id/destinationEdit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableStart="@drawable/ic_location"
