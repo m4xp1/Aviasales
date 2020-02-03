@@ -25,6 +25,9 @@ class AirportListAdapter @Inject constructor(
         return viewHolder.itemView
     }
 
+    fun findItem(fullName: String): AirportModel? =
+        (0 until count).map { getItem(it) }.firstOrNull { it.fullName == fullName }
+
     override fun getItem(position: Int): AirportModel {
         return requireNotNull(super.getItem(position))
     }
