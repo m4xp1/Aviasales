@@ -4,6 +4,6 @@
     <!-- TicketRouteActivity -->
     <string name="ticket_route_activity_destination_hint">Куда лететь</string>
     <string name="ticket_route_activity_departure_hint">Откуда вылет</string>
-    <string name="ticket_route_activity_error_hint">Укажите значение</string>
+    <string name="ticket_route_activity_error_hint_input_value">Укажите значение</string>
     <string name="ticket_route_activity_find_button">Найти билеты</string>
 </resources>
