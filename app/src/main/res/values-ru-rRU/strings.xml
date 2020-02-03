@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- TicketRouteActivity -->
+    <string name="ticket_route_activity_destination_hint">Куда лететь</string>
+    <string name="ticket_route_activity_departure_hint">Откуда вылет</string>
+    <string name="ticket_route_activity_find_button">Найти билеты</string>
+</resources>
