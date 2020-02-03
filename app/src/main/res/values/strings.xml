@@ -4,5 +4,6 @@
     <!-- TicketRouteActivity -->
     <string name="ticket_route_activity_departure_hint">Where is the departure</string>
     <string name="ticket_route_activity_destination_hint">Where to fly</string>
+    <string name="ticket_route_activity_error_hint">Enter a value</string>
     <string name="ticket_route_activity_find_button">Find tickets</string>
 </resources>
