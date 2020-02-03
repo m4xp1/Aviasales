@@ -236,6 +236,12 @@ class TicketSearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onDestroy() {
+        planeMarkerAnimator?.cancel()
+
+        super.onDestroy()
+    }
+
     companion object {
 
         private const val Z_INDEX_GRAPHIC = 0f
