@@ -3,13 +3,17 @@ package one.xcorp.aviasales.screen.ticket.search
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.animation.Interpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
+import androidx.core.graphics.contains
+import androidx.core.view.doOnPreDraw
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds
+import com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -26,6 +30,7 @@ import one.xcorp.aviasales.R.style.MarkerTextAppearance
 import one.xcorp.aviasales.extension.animate
 import one.xcorp.aviasales.extension.bearingTo
 import one.xcorp.aviasales.extension.getThemeAttribute
+import one.xcorp.aviasales.extension.rootView
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
 import java.util.concurrent.TimeUnit.SECONDS
@@ -40,6 +45,10 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private var planeMarkerAnimator: ValueAnimator? = null
     private var planeMarkerAnimatorPlayTime: Long = 0L
+
+    private val displayRect by lazy {
+        Rect().also { windowManager.defaultDisplay.getRectSize(it) }
+    }
 
     private val dotLineGap by lazy {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_gap).toFloat()
@@ -85,10 +94,12 @@ class TicketSearchActivity : AppCompatActivity() {
             setMapStyle(loadRawResourceStyle(applicationContext, R.raw.google_map_style))
         }
 
-        val markerBounds = setInitialMapMarkers()
-        setInitialCameraPosition(markerBounds)
+        rootView.doOnPreDraw {
+            val markerBounds = setInitialMapMarkers()
+            setInitialCameraPosition(markerBounds)
 
-        startPlaneMarkerAnimation()
+            startPlaneMarkerAnimation()
+        }
     }
 
     private fun setInitialMapMarkers(): LatLngBounds {
@@ -114,14 +125,21 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun setInitialCameraPosition(markerBounds: LatLngBounds) {
-        val cameraUpdate = newLatLngBounds(
-            markerBounds,
-            resources.displayMetrics.widthPixels,
-            resources.displayMetrics.heightPixels,
-            resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
-        )
+        val southWest = googleMap.projection.toScreenLocation(markerBounds.southwest)
+        val northEast = googleMap.projection.toScreenLocation(markerBounds.northeast)
 
-        googleMap.moveCamera(cameraUpdate)
+        if (displayRect.contains(southWest) && displayRect.contains(northEast)) {
+            val cameraUpdate = newLatLngBounds(
+                markerBounds,
+                resources.displayMetrics.widthPixels,
+                resources.displayMetrics.heightPixels,
+                resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
+            )
+
+            googleMap.moveCamera(cameraUpdate)
+        } else {
+            googleMap.moveCamera(newLatLngZoom(departureAirport.location.toLatLng(), 2f))
+        }
     }
 
     private fun addAirportMarker(airport: AirportModel): Marker {
