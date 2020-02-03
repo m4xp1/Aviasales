@@ -5,6 +5,7 @@
     <color name="primary">#03A9F4</color>
     <color name="window_background">#FAFAFA</color>
     <color name="accent">#8BC34A</color>
+    <color name="accent_error">#FF5252</color>
     <color name="navigation_bar_background">#F2F2F2</color>
     <color name="marker_background">#E62196F3</color>
     <color name="plane_route">#2296F1</color>

@@ -26,6 +26,11 @@
 
     <style name="TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
         <item name="android:textColorHint">?android:attr/textColorHint</item>
+        <item name="errorTextAppearance">@style/TextInputLayout.Error</item>
+    </style>
+
+    <style name="TextInputLayout.Error" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/accent_error</item>
     </style>
 
     <style name="AutoCompleteTextView" parent="Widget.AppCompat.AutoCompleteTextView">
