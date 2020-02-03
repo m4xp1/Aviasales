@@ -203,6 +203,7 @@ class TicketSearchActivity : AppCompatActivity() {
             LinearOutSlowInInterpolator(),
             planeMarkerAnimatorPlayTime
         )
+        planeMarkerAnimatorPlayTime = 0L
     }
 
     private fun endPlaneMarkerAnimation() {
