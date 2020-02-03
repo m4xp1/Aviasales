@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.MotionEvent.*
 import android.view.animation.Interpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
@@ -12,8 +14,7 @@ import androidx.core.graphics.contains
 import androidx.core.view.doOnPreDraw
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
-import com.google.android.gms.maps.CameraUpdateFactory.newLatLngBounds
-import com.google.android.gms.maps.CameraUpdateFactory.newLatLngZoom
+import com.google.android.gms.maps.CameraUpdateFactory.*
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
@@ -45,6 +46,8 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private var planeMarkerAnimator: ValueAnimator? = null
     private var planeMarkerAnimatorPlayTime: Long = 0L
+    private var isTrackingMarkerEnabled = false
+    private var isOnTouchStarted = false
 
     private val displayRect by lazy {
         Rect().also { windowManager.defaultDisplay.getRectSize(it) }
@@ -125,21 +128,33 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun setInitialCameraPosition(markerBounds: LatLngBounds) {
+        var cameraUpdate = newLatLngBounds(
+            markerBounds,
+            resources.displayMetrics.widthPixels,
+            resources.displayMetrics.heightPixels,
+            resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
+        )
+        googleMap.moveCamera(cameraUpdate)
+
         val southWest = googleMap.projection.toScreenLocation(markerBounds.southwest)
         val northEast = googleMap.projection.toScreenLocation(markerBounds.northeast)
 
-        if (displayRect.contains(southWest) && displayRect.contains(northEast)) {
-            val cameraUpdate = newLatLngBounds(
-                markerBounds,
-                resources.displayMetrics.widthPixels,
-                resources.displayMetrics.heightPixels,
-                resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
+        if (!displayRect.contains(southWest) && !displayRect.contains(northEast)) {
+            isTrackingMarkerEnabled = true
+            cameraUpdate = newLatLngZoom(
+                departureAirport.location.toLatLng(),
+                googleMap.minZoomLevel
             )
-
             googleMap.moveCamera(cameraUpdate)
-        } else {
-            googleMap.moveCamera(newLatLngZoom(departureAirport.location.toLatLng(), 2f))
         }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        when (event.action and ACTION_MASK) {
+            ACTION_DOWN -> isOnTouchStarted = true
+            ACTION_UP -> isOnTouchStarted = false
+        }
+        return super.dispatchTouchEvent(event)
     }
 
     private fun addAirportMarker(airport: AirportModel): Marker {
@@ -207,7 +222,16 @@ class TicketSearchActivity : AppCompatActivity() {
             setDuration(duration)
             setInterpolator(interpolator)
             currentPlayTime = playTime
+            if (isTrackingMarkerEnabled) {
+                addUpdateListener { updateCameraPosition() }
+            }
             start()
+        }
+    }
+
+    private fun updateCameraPosition() {
+        if (!isOnTouchStarted) {
+            googleMap.moveCamera(newLatLng(planeMarker.position))
         }
     }
 
