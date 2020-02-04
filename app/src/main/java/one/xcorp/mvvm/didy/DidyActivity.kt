@@ -2,7 +2,6 @@ package one.xcorp.mvvm.didy
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import one.xcorp.didy.holder.ComponentHolder
 import one.xcorp.didy.provider.WeakProvider
@@ -23,7 +22,7 @@ abstract class DidyActivity : AppCompatActivity() {
     open fun onInject(savedInstanceState: Bundle?): ComponentHolder<*, *>? = null
 
     @Inject
-    fun onBind(activityProvider: WeakProvider<FragmentActivity>) {
+    fun onBind(activityProvider: WeakProvider<AppCompatActivity>) {
         activityProvider.set(this)
     }
 
