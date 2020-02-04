@@ -1,0 +1,31 @@
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+}
+
+configurations.all {
+    resolutionStrategy.force "junit:junit:$junit_version"
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin
+    //noinspection DifferentStdlibGradleVersion see https://youtrack.jetbrains.com/issue/KT-33248
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+
+    // JSR 330
+    implementation "javax.inject:javax.inject:$jsr_330_version"
+
+    // RxJava
+    implementation "io.reactivex.rxjava2:rxjava:$rxjava_version"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxkotlin_version"
+
+    // Tests
+    testImplementation "junit:junit:$junit_version"
+}
