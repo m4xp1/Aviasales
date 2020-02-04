@@ -16,7 +16,7 @@ import one.xcorp.aviasales.extension.hideError
 import one.xcorp.aviasales.extension.showError
 import one.xcorp.aviasales.extension.updateCompoundDrawable
 import one.xcorp.aviasales.screen.ticket.route.adapter.CityAdapter
-import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
+import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
 
 class TicketRouteActivity : AppCompatActivity() {
@@ -26,8 +26,8 @@ class TicketRouteActivity : AppCompatActivity() {
     private val departureAdapter by lazy { CityAdapter(layoutInflater) }
     private val destinationAdapter by lazy { CityAdapter(layoutInflater) }
 
-    private var departureAirport: AirportModel? = null
-    private var destinationAirport: AirportModel? = null
+    private var departureCity: CityModel? = null
+    private var destinationCity: CityModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,13 +59,13 @@ class TicketRouteActivity : AppCompatActivity() {
     }
 
     private fun invalidateDepartureSelection(position: Int) {
-        departureAirport = if (position == -1) null else departureAdapter.getItem(position)
-        setIataImageLabel(departureEdit, departureAirport?.iata)
+        departureCity = if (position == -1) null else departureAdapter.getItem(position)
+        setIataImageLabel(departureEdit, departureCity?.iata?.firstOrNull())
     }
 
     private fun invalidateDestinationSelection(position: Int) {
-        destinationAirport = if (position == -1) null else destinationAdapter.getItem(position)
-        setIataImageLabel(destinationEdit, destinationAirport?.iata)
+        destinationCity = if (position == -1) null else destinationAdapter.getItem(position)
+        setIataImageLabel(destinationEdit, destinationCity?.iata?.firstOrNull())
     }
 
     private fun setIataImageLabel(view: TextView, iata: String?) {
@@ -104,11 +104,11 @@ class TicketRouteActivity : AppCompatActivity() {
         departureView.hideError()
         destinationView.hideError()
 
-        if (destinationAirport == null) {
+        if (destinationCity == null) {
             destinationView.showError(ticket_route_activity_error_hint_input_value)
             destinationEdit.requestFocus()
         }
-        if (departureAirport == null) {
+        if (departureCity == null) {
             departureView.showError(ticket_route_activity_error_hint_input_value)
             departureView.requestFocus()
         }

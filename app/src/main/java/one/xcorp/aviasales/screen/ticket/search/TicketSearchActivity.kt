@@ -28,7 +28,7 @@ import one.xcorp.aviasales.extension.animate
 import one.xcorp.aviasales.extension.bearingTo
 import one.xcorp.aviasales.extension.rootView
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
-import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
+import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -36,8 +36,8 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private val airportIconGenerator by lazy { AirportIconGenerator(this) }
 
-    private lateinit var departureAirport: AirportModel
-    private lateinit var destinationAirport: AirportModel
+    private lateinit var departureCity: CityModel
+    private lateinit var destinationCity: CityModel
 
     private lateinit var googleMap: GoogleMap
     private lateinit var planeMarker: Marker
@@ -63,8 +63,8 @@ class TicketSearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_search)
 
-        departureAirport = requireNotNull(intent.getParcelableExtra(KEY_DEPARTURE_AIRPORT))
-        destinationAirport = requireNotNull(intent.getParcelableExtra(KEY_DESTINATION_AIRPORT))
+        departureCity = requireNotNull(intent.getParcelableExtra(KEY_DEPARTURE_CITY))
+        destinationCity = requireNotNull(intent.getParcelableExtra(KEY_DESTINATION_CITY))
 
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
@@ -104,17 +104,17 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun setInitialMapMarkers(): LatLngBounds {
-        val departureLocation = departureAirport.location.toLatLng()
-        val destinationLocation = destinationAirport.location.toLatLng()
+        val departureLocation = departureCity.location.toLatLng()
+        val destinationLocation = destinationCity.location.toLatLng()
         val bearing = departureLocation.bearingTo(destinationLocation)
 
         val pointsSet = mutableSetOf<LatLng>()
 
         addPlaneRoute(departureLocation, destinationLocation)
             .apply { pointsSet.addAll(points) }
-        addAirportMarker(departureAirport)
+        addAirportMarker(departureCity)
             .apply { pointsSet.add(position) }
-        addAirportMarker(destinationAirport)
+        addAirportMarker(destinationCity)
             .apply { pointsSet.add(position) }
         planeMarker = addPlaneMarker(departureLocation, bearing)
             .apply { pointsSet.add(position) }
@@ -140,7 +140,7 @@ class TicketSearchActivity : AppCompatActivity() {
         if (!displayRect.contains(southWest) && !displayRect.contains(northEast)) {
             isTrackingMarkerEnabled = true
             cameraUpdate = newLatLngZoom(
-                departureAirport.location.toLatLng(),
+                departureCity.location.toLatLng(),
                 googleMap.minZoomLevel
             )
             googleMap.moveCamera(cameraUpdate)
@@ -155,10 +155,12 @@ class TicketSearchActivity : AppCompatActivity() {
         return super.dispatchTouchEvent(event)
     }
 
-    private fun addAirportMarker(airport: AirportModel): Marker {
+    private fun addAirportMarker(city: CityModel): Marker {
+        val iata = city.iata.firstOrNull() ?: ""
+
         val markerOptions = MarkerOptions()
-            .position(airport.location.toLatLng())
-            .icon(fromBitmap(airportIconGenerator.makeIcon(airport.iata)))
+            .position(city.location.toLatLng())
+            .icon(fromBitmap(airportIconGenerator.makeIcon(iata)))
             .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_MARKER)
 
@@ -210,7 +212,7 @@ class TicketSearchActivity : AppCompatActivity() {
     ) {
         planeMarkerAnimator?.cancel()
 
-        val destinationLocation = destinationAirport.location.toLatLng()
+        val destinationLocation = destinationCity.location.toLatLng()
         planeMarkerAnimator = planeMarker.animate(destinationLocation).apply {
             setDuration(duration)
             setInterpolator(interpolator)
@@ -240,18 +242,18 @@ class TicketSearchActivity : AppCompatActivity() {
         private const val Z_INDEX_MARKER = 1f
         private const val Z_INDEX_ANIMATED_MARKER = 2f
 
-        private const val KEY_DEPARTURE_AIRPORT = "departure_airport"
-        private const val KEY_DESTINATION_AIRPORT = "destination_airport"
+        private const val KEY_DEPARTURE_CITY = "departure_city"
+        private const val KEY_DESTINATION_CITY = "destination_city"
 
         private const val STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME = "plane_marker_animator_play_time"
 
         fun newIntent(
             context: Context,
-            departureAirport: AirportModel,
-            destinationAirport: AirportModel
+            departureCity: CityModel,
+            destinationCity: CityModel
         ) = Intent(context, TicketSearchActivity::class.java).apply {
-            putExtra(KEY_DEPARTURE_AIRPORT, departureAirport)
-            putExtra(KEY_DESTINATION_AIRPORT, destinationAirport)
+            putExtra(KEY_DEPARTURE_CITY, departureCity)
+            putExtra(KEY_DESTINATION_CITY, destinationCity)
         }
     }
 }

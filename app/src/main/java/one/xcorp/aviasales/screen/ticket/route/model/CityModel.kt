@@ -4,13 +4,14 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class AirportModel(
+data class CityModel(
+    val name: String,
     val fullName: String,
-    val iata: String,
+    val iata: List<String>,
     val location: LocationModel
 ) : Parcelable {
 
     override fun toString(): String {
-        return fullName
+        return name
     }
 }
