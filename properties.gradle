@@ -1,5 +1,5 @@
 ext {
-    cities_api = [
+    city_api = [
             url: "https://yasen.hotellook.com"
     ]
 }

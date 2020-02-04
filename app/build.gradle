@@ -32,7 +32,7 @@ android {
         }
     }
     applicationVariants.all { variant ->
-        variant.buildConfigField 'String', 'CITIES_API_URL', "\"${cities_api.url}\""
+        variant.buildConfigField 'String', 'CITY_API_URL', "\"${city_api.url}\""
     }
 }
 
