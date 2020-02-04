@@ -12,7 +12,7 @@ class CityAdapter @Inject constructor(
     private val inflater: LayoutInflater
 ) : ArrayAdapter<CityModel>(inflater.context, 0) {
 
-    private val filter by lazy { OffFilter() }
+    private val filter by lazy { WithoutFiltrationFilter() }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val viewHolder = if (convertView != null) {
@@ -26,17 +26,23 @@ class CityAdapter @Inject constructor(
     }
 
     override fun getItem(position: Int): CityModel {
-        return requireNotNull(super.getItem(position))
+        return super.getItem(position) as CityModel
     }
+
+    fun setItems(items: List<CityModel>) = clear().also { addAll(items) }
 
     override fun getFilter(): Filter {
         return filter
     }
 
-    private inner class OffFilter : Filter() {
+    private inner class WithoutFiltrationFilter : Filter() {
+
+        override fun convertResultToString(resultValue: Any?) = (resultValue as CityModel).name
 
         override fun performFiltering(constraint: CharSequence?): FilterResults? {
-            return null
+            val results = FilterResults()
+            results.count = count
+            return results
         }
 
         override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
