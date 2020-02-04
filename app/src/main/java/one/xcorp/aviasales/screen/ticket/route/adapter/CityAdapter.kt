@@ -25,10 +25,6 @@ class CityAdapter @Inject constructor(
         return viewHolder.itemView
     }
 
-    fun getItemPosition(item: CityModel): Int = (0 until count)
-        .map { getItem(it) }
-        .indexOfFirst { it == item }
-
     override fun getItem(position: Int): CityModel {
         return requireNotNull(super.getItem(position))
     }
