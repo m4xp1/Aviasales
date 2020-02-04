@@ -15,12 +15,6 @@ import com.google.android.material.textfield.TextInputLayout
 
 private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
 
-fun Activity.getRootView(): View =
-    findViewById<View>(android.R.id.content)
-
-fun Activity.getDisplayRect(): Rect =
-    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
-
 @AnyRes
 fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
     theme.obtainStyledAttributes(intArrayOf(resId)).run {
@@ -28,18 +22,6 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
         recycle()
         id
     }
-
-fun TextInputLayout.showError(@StringRes resId: Int) {
-    isErrorEnabled = true
-    error = resources.getString(resId)
-}
-
-fun TextInputLayout.hideError() {
-    if (isErrorEnabled) {
-        isErrorEnabled = false
-        error = null
-    }
-}
 
 fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
     setOnEditorActionListener { _, actionId, _ ->
@@ -78,3 +60,21 @@ fun TextView.updateCompoundDrawable(
         drawables[3]
     )
 }
+
+fun TextInputLayout.showError(@StringRes resId: Int) {
+    isErrorEnabled = true
+    error = resources.getString(resId)
+}
+
+fun TextInputLayout.hideError() {
+    if (isErrorEnabled) {
+        isErrorEnabled = false
+        error = null
+    }
+}
+
+fun Activity.getRootView(): View =
+    findViewById<View>(android.R.id.content)
+
+fun Activity.getDisplayRect(): Rect =
+    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
