@@ -11,8 +11,8 @@ internal class NetworkModule {
 
     @Provides
     @DataScope
-    fun provideGson(): Gson = Gson()
+    fun gson(): Gson = Gson()
 
     @Provides
-    fun provideHttpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
+    fun httpClientBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
 }
