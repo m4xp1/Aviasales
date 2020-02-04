@@ -23,7 +23,7 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
         id
     }
 
-fun View.setOnClickListener(block: () -> Unit) = setOnClickListener { block.invoke() }
+fun <T> View.setOnClickListener(block: () -> T) = setOnClickListener { block.invoke() }
 
 fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
     setOnEditorActionListener { _, actionId, _ ->
