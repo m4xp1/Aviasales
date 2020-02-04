@@ -9,8 +9,8 @@ internal interface CityRetrofitApi {
 
     @GET(METHOD_AUTOCOMPLETE)
     fun autocomplete(
-        @Query("term") term: Int,
-        @Query("lang") lang: Int
+        @Query("term") term: String,
+        @Query("lang") lang: String
     ): Single<AutocompleteResponse>
 
     companion object {
