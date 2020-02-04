@@ -3,7 +3,6 @@ package one.xcorp.aviasales.screen.ticket.search
 import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.MotionEvent.*
@@ -26,7 +25,8 @@ import one.xcorp.aviasales.R.integer.ticket_search_activity_average_animation_du
 import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_duration
 import one.xcorp.aviasales.extension.animate
 import one.xcorp.aviasales.extension.bearingTo
-import one.xcorp.aviasales.extension.rootView
+import one.xcorp.aviasales.extension.getDisplaySize
+import one.xcorp.aviasales.extension.getRootView
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
@@ -46,10 +46,6 @@ class TicketSearchActivity : AppCompatActivity() {
     private var planeMarkerAnimatorPlayTime: Long = 0L
     private var isTrackingMarkerEnabled = false
     private var isOnTouchStarted = false
-
-    private val displayRect by lazy {
-        Rect().also { windowManager.defaultDisplay.getRectSize(it) }
-    }
 
     private val dotLineGap by lazy {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_gap).toFloat()
@@ -95,7 +91,7 @@ class TicketSearchActivity : AppCompatActivity() {
             setMapStyle(loadRawResourceStyle(applicationContext, R.raw.google_map_style))
         }
 
-        rootView.doOnPreDraw {
+        getRootView().doOnPreDraw {
             val markerBounds = setInitialMapMarkers()
             setInitialCameraPosition(markerBounds)
 
@@ -137,7 +133,8 @@ class TicketSearchActivity : AppCompatActivity() {
         val southWest = googleMap.projection.toScreenLocation(markerBounds.southwest)
         val northEast = googleMap.projection.toScreenLocation(markerBounds.northeast)
 
-        if (!displayRect.contains(southWest) && !displayRect.contains(northEast)) {
+        val displaySize = getDisplaySize()
+        if (!displaySize.contains(southWest) && !displaySize.contains(northEast)) {
             isTrackingMarkerEnabled = true
             cameraUpdate = newLatLngZoom(
                 departureCity.location.toLatLng(),

@@ -13,11 +13,11 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import com.google.android.material.textfield.TextInputLayout
 
-val Activity.rootView: View
-    get() = findViewById<View>(android.R.id.content)
+fun Activity.getRootView(): View =
+    findViewById<View>(android.R.id.content)
 
-val Activity.displaySize: Rect
-    get() = Rect().also { windowManager.defaultDisplay.getRectSize(it) }
+fun Activity.getDisplaySize(): Rect =
+    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
 
 @AnyRes
 fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
