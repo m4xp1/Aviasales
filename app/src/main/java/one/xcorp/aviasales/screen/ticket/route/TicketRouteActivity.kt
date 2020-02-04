@@ -60,19 +60,19 @@ class TicketRouteActivity : AppCompatActivity() {
 
     private fun invalidateDepartureSelection(position: Int) {
         departureCity = if (position == -1) null else departureAdapter.getItem(position)
-        setIataImageLabel(departureEdit, departureCity?.iata?.firstOrNull())
+        setAirportLabel(departureEdit, departureCity?.getAirportName())
     }
 
     private fun invalidateDestinationSelection(position: Int) {
         destinationCity = if (position == -1) null else destinationAdapter.getItem(position)
-        setIataImageLabel(destinationEdit, destinationCity?.iata?.firstOrNull())
+        setAirportLabel(destinationEdit, destinationCity?.getAirportName())
     }
 
-    private fun setIataImageLabel(view: TextView, iata: String?) {
-        val iataDrawable = iata?.let {
-            BitmapDrawable(resources, airportIconGenerator.makeIcon(iata))
+    private fun setAirportLabel(view: TextView, airportName: String?) {
+        val airportLabel = airportName?.let {
+            BitmapDrawable(resources, airportIconGenerator.makeIcon(airportName))
         }
-        view.updateCompoundDrawable(end = iataDrawable)
+        view.updateCompoundDrawable(end = airportLabel)
     }
 
     private fun watchTextChanges(

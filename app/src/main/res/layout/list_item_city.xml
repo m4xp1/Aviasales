@@ -20,7 +20,7 @@
         tools:text="Khabarovsk, Russia" />
 
     <TextView
-        android:id="@+id/iataView"
+        android:id="@+id/airportNameView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@drawable/airport_marker_background"

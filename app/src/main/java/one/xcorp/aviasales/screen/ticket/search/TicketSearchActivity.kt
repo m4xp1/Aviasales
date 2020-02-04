@@ -153,11 +153,9 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun addAirportMarker(city: CityModel): Marker {
-        val iata = city.iata.firstOrNull() ?: ""
-
         val markerOptions = MarkerOptions()
             .position(city.location.toLatLng())
-            .icon(fromBitmap(airportIconGenerator.makeIcon(iata)))
+            .icon(fromBitmap(airportIconGenerator.makeIcon(city.getAirportName())))
             .anchor(0.5f, 0.5f)
             .zIndex(Z_INDEX_MARKER)
 

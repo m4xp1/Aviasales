@@ -2,8 +2,6 @@ package one.xcorp.aviasales.screen.ticket.route.adapter
 
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.list_item_city.view.*
 import one.xcorp.aviasales.R
@@ -15,15 +13,7 @@ class CityViewHolder private constructor(
 
     fun bindTo(item: CityModel) {
         itemView.fullNameView.text = item.fullName
-
-        val iata = item.iata.firstOrNull()
-        if (iata == null) {
-            itemView.iataView.text = null
-            itemView.iataView.visibility = INVISIBLE
-        } else {
-            itemView.iataView.text = iata
-            itemView.iataView.visibility = VISIBLE
-        }
+        itemView.airportNameView.text = item.getAirportName()
     }
 
     companion object {
