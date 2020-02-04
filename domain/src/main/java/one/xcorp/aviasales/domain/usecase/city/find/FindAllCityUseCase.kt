@@ -1,14 +1,14 @@
-package one.xcorp.aviasales.domain.usecase
+package one.xcorp.aviasales.domain.usecase.city.find
 
 import io.reactivex.Single
 import one.xcorp.aviasales.domain.entity.CityEntity
 import one.xcorp.aviasales.domain.repository.CityRepository
 import javax.inject.Inject
 
-class FindCityUseCase @Inject constructor(
+class FindAllCityUseCase @Inject constructor(
     private val cityRepository: CityRepository
-) {
+) : FindCityUseCase {
 
-    operator fun invoke(query: String): Single<List<CityEntity>> =
+    override operator fun invoke(query: String): Single<List<CityEntity>> =
         cityRepository.find(query)
 }
