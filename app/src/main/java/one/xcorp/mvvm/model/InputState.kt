@@ -9,4 +9,11 @@ sealed class InputState<out T> {
     ) : InputState<T>()
 
     open class Error : InputState<Nothing>()
+
+    companion object {
+
+        operator fun <T> invoke(value: T?): InputState<T> {
+            return if (value == null) NotEntered else Entered(value)
+        }
+    }
 }
