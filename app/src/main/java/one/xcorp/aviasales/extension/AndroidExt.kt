@@ -3,6 +3,7 @@ package one.xcorp.aviasales.extension
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.View
@@ -14,6 +15,9 @@ import com.google.android.material.textfield.TextInputLayout
 
 val Activity.rootView: View
     get() = findViewById<View>(android.R.id.content)
+
+val Activity.displaySize: Rect
+    get() = Rect().also { windowManager.defaultDisplay.getRectSize(it) }
 
 @AnyRes
 fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
