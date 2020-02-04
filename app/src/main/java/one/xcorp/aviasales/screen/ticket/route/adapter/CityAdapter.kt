@@ -8,11 +8,11 @@ import android.widget.Filter
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
 import javax.inject.Inject
 
-class AirportListAdapter @Inject constructor(
+class CityAdapter @Inject constructor(
     private val inflater: LayoutInflater
 ) : ArrayAdapter<AirportModel>(inflater.context, 0) {
 
-    private val filter by lazy { AirportFilter() }
+    private val filter by lazy { OffFilter() }
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val viewHolder = if (convertView != null) {
@@ -37,7 +37,7 @@ class AirportListAdapter @Inject constructor(
         return filter
     }
 
-    private inner class AirportFilter : Filter() {
+    private inner class OffFilter : Filter() {
 
         override fun performFiltering(constraint: CharSequence?): FilterResults? {
             return null

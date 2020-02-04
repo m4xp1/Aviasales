@@ -15,7 +15,7 @@ import one.xcorp.aviasales.R.string.ticket_route_activity_error_hint_input_value
 import one.xcorp.aviasales.extension.hideError
 import one.xcorp.aviasales.extension.showError
 import one.xcorp.aviasales.extension.updateCompoundDrawable
-import one.xcorp.aviasales.screen.ticket.route.adapter.AirportListAdapter
+import one.xcorp.aviasales.screen.ticket.route.adapter.CityAdapter
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
 
@@ -23,8 +23,8 @@ class TicketRouteActivity : AppCompatActivity() {
 
     private val airportIconGenerator by lazy { AirportIconGenerator(this) }
 
-    private val departureAdapter by lazy { AirportListAdapter(layoutInflater) }
-    private val destinationAdapter by lazy { AirportListAdapter(layoutInflater) }
+    private val departureAdapter by lazy { CityAdapter(layoutInflater) }
+    private val destinationAdapter by lazy { CityAdapter(layoutInflater) }
 
     private var departureAirport: AirportModel? = null
     private var destinationAirport: AirportModel? = null
