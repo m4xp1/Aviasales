@@ -8,7 +8,7 @@ import one.xcorp.didy.holder.ComponentHolder
 import one.xcorp.didy.provider.WeakProvider
 import javax.inject.Inject
 
-abstract class DiDyActivity : AppCompatActivity() {
+abstract class DidyActivity : AppCompatActivity() {
 
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
