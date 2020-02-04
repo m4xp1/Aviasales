@@ -21,6 +21,10 @@ interface ApplicationComponent {
 
     val context: Context
 
+    val ticketRouteComponentFactory: TicketRouteComponent.Factory
+
+    val ticketRouteComponentHolder: TicketRouteComponent.Holder
+
     @Component.Factory
     interface Factory {
 
