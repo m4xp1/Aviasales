@@ -25,7 +25,7 @@ import one.xcorp.aviasales.R.integer.ticket_search_activity_average_animation_du
 import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_duration
 import one.xcorp.aviasales.extension.animate
 import one.xcorp.aviasales.extension.bearingTo
-import one.xcorp.aviasales.extension.getDisplaySize
+import one.xcorp.aviasales.extension.getDisplayRect
 import one.xcorp.aviasales.extension.getRootView
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
@@ -133,8 +133,8 @@ class TicketSearchActivity : AppCompatActivity() {
         val southWest = googleMap.projection.toScreenLocation(markerBounds.southwest)
         val northEast = googleMap.projection.toScreenLocation(markerBounds.northeast)
 
-        val displaySize = getDisplaySize()
-        if (!displaySize.contains(southWest) && !displaySize.contains(northEast)) {
+        val displayRect = getDisplayRect()
+        if (!displayRect.contains(southWest) && !displayRect.contains(northEast)) {
             isTrackingMarkerEnabled = true
             cameraUpdate = newLatLngZoom(
                 departureCity.location.toLatLng(),

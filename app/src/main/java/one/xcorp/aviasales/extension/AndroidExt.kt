@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputLayout
 fun Activity.getRootView(): View =
     findViewById<View>(android.R.id.content)
 
-fun Activity.getDisplaySize(): Rect =
+fun Activity.getDisplayRect(): Rect =
     Rect().also { windowManager.defaultDisplay.getRectSize(it) }
 
 @AnyRes
