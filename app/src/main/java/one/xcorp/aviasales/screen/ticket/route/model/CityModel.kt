@@ -14,8 +14,4 @@ data class CityModel(
 
     fun getAirportName(): String =
         iata.firstOrNull() ?: name.take(3).toUpperCase(Locale.getDefault())
-
-    override fun toString(): String {
-        return name
-    }
 }
