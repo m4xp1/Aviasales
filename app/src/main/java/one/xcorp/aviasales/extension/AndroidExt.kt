@@ -13,6 +13,8 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import com.google.android.material.textfield.TextInputLayout
 
+private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
+
 fun Activity.getRootView(): View =
     findViewById<View>(android.R.id.content)
 
@@ -39,7 +41,14 @@ fun TextInputLayout.hideError() {
     }
 }
 
-private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
+fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
+    setOnEditorActionListener { _, actionId, _ ->
+        if (actionId == imeAction) {
+            block.invoke()
+            true
+        } else false
+    }
+}
 
 fun TextView.updateCompoundDrawable(
     start: Drawable? = CurrentDrawable,
