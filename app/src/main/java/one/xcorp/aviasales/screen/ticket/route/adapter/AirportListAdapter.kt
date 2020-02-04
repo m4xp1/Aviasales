@@ -16,9 +16,9 @@ class AirportListAdapter @Inject constructor(
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val viewHolder = if (convertView != null) {
-            convertView.tag as AirportViewHolder
+            convertView.tag as CityViewHolder
         } else {
-            AirportViewHolder(inflater, parent).apply { itemView.tag = this }
+            CityViewHolder(inflater, parent).apply { itemView.tag = this }
         }
 
         viewHolder.bindTo(getItem(position))

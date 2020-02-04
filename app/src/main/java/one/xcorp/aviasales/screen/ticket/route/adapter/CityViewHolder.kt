@@ -3,11 +3,11 @@ package one.xcorp.aviasales.screen.ticket.route.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.list_item_airport.view.*
+import kotlinx.android.synthetic.main.list_item_city.view.*
 import one.xcorp.aviasales.R
 import one.xcorp.aviasales.screen.ticket.route.model.AirportModel
 
-class AirportViewHolder private constructor(
+class CityViewHolder private constructor(
     val itemView: View
 ) {
 
@@ -18,9 +18,9 @@ class AirportViewHolder private constructor(
 
     companion object {
 
-        operator fun invoke(inflater: LayoutInflater, parent: ViewGroup): AirportViewHolder {
-            val view = inflater.inflate(R.layout.list_item_airport, parent, false)
-            return AirportViewHolder(view)
+        operator fun invoke(inflater: LayoutInflater, parent: ViewGroup): CityViewHolder {
+            val view = inflater.inflate(R.layout.list_item_city, parent, false)
+            return CityViewHolder(view)
         }
     }
 }
