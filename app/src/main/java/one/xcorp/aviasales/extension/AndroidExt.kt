@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.AnyRes
@@ -25,6 +26,13 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
     }
 
 fun <T> View.setOnClickListener(block: () -> T) = setOnClickListener { block.invoke() }
+
+fun View.watchTouches(block: () -> Unit) = setOnTouchListener { _, event ->
+    when (event.action and MotionEvent.ACTION_MASK) {
+        MotionEvent.ACTION_UP -> block.invoke()
+    }
+    false
+}
 
 fun TextView.updateCompoundDrawable(
     start: Drawable? = CurrentDrawable,
