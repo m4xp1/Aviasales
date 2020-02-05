@@ -25,6 +25,10 @@ interface ApplicationComponent {
 
     val ticketRouteComponentHolder: TicketRouteComponent.Holder
 
+    val ticketSearchComponentFactory: TicketSearchComponent.Factory
+
+    val ticketSearchComponentHolder: TicketSearchComponent.Holder
+
     @Component.Factory
     interface Factory {
 
