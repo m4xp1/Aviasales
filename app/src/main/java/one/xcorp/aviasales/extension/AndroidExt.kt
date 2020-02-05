@@ -26,6 +26,10 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
         id
     }
 
+fun View.watchFocusChanges(block: (Boolean) -> Unit) = setOnFocusChangeListener { _, hasFocus ->
+    block.invoke(hasFocus)
+}
+
 fun <T> View.setOnClickListener(block: () -> T) = setOnClickListener { block.invoke() }
 
 fun View.watchTouches(block: () -> Unit) = setOnTouchListener { _, event ->
