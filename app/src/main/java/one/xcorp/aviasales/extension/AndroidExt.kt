@@ -91,20 +91,14 @@ fun TextView.watchTextChanges(block: (String) -> Unit) {
     addTextChangedListener(afterTextChanged = { block.invoke(text.toString()) })
 }
 
-fun TextInputLayout.showError(@StringRes resId: Int, requestFocus: Boolean = true) {
+fun TextInputLayout.showError(@StringRes resId: Int) {
     isErrorEnabled = true
     error = resources.getString(resId)
-    if (requestFocus) {
-        editText?.requestFocus()
-    }
 }
 
-fun TextInputLayout.showError(message: String? = null, requestFocus: Boolean = true) {
+fun TextInputLayout.showError(message: String? = null) {
     isErrorEnabled = true
     error = message
-    if (requestFocus) {
-        editText?.requestFocus()
-    }
 }
 
 fun TextInputLayout.hideError() {
