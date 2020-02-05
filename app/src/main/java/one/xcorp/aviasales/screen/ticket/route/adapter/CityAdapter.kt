@@ -31,6 +31,8 @@ class CityAdapter @Inject constructor(
 
     fun setItems(items: List<CityModel>) = clear().also { addAll(items) }
 
+    fun getLabel(item: CityModel) = filter.convertResultToString(item)
+
     override fun getFilter(): Filter {
         return filter
     }
