@@ -37,10 +37,10 @@ class TicketRouteViewModel @Inject constructor(
         inputState = inputStateSubject.startWith(InputModel()).toLiveData()
     }
 
-    fun obtainDepartureCompletion(query: String): Unit =
+    fun obtainDepartureCompletion(query: String) =
         departureCityCompletionSubject.onNext(query)
 
-    fun obtainDestinationCompletion(query: String): Unit =
+    fun obtainDestinationCompletion(query: String) =
         destinationCityCompletionSubject.onNext(query)
 
     fun setSelectedDepartureCity(city: CityModel?): Unit? = inputState.value?.run {
