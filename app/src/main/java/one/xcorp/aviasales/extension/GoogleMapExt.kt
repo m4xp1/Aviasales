@@ -1,9 +1,26 @@
 package one.xcorp.aviasales.extension
 
 import android.animation.ValueAnimator
+import android.graphics.Point
+import android.graphics.Rect
+import com.google.android.gms.maps.Projection
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.SphericalUtil
+
+fun Rect.toProjection(projection: Projection): LatLngBounds {
+    val southWest = projection.fromScreenLocation(Point(left, bottom))
+    val northEast = projection.fromScreenLocation(Point(right, top))
+
+    return LatLngBounds.builder()
+        .include(southWest)
+        .include(northEast)
+        .build()
+}
+
+fun LatLngBounds.contains(bounds: LatLngBounds): Boolean =
+    contains(bounds.southwest) && contains(bounds.northeast)
 
 fun LatLng.interpolate(dest: LatLng, fraction: Float): LatLng =
     SphericalUtil.interpolate(this, dest, fraction.toDouble())
