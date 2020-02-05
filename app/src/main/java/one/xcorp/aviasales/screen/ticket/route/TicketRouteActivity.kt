@@ -59,7 +59,7 @@ class TicketRouteActivity : DidyActivity() {
         .ticketRouteComponentHolder
         .injectWith(injector, Factory::createComponent)
 
-    private fun configureDepartureEdit() = with(departureEdit) {
+    private fun configureDepartureEdit(): Unit = with(departureEdit) {
         setAdapter(departureAdapter)
         watchTouches(::showCompletion)
         watchFocusChanges(::changeCompletionVisibility)
@@ -77,7 +77,7 @@ class TicketRouteActivity : DidyActivity() {
         }
     }
 
-    private fun configureDestinationEdit() = with(destinationEdit) {
+    private fun configureDestinationEdit(): Unit = with(destinationEdit) {
         setAdapter(destinationAdapter)
         watchTouches(::showCompletion)
         watchFocusChanges(::changeCompletionVisibility)
@@ -96,38 +96,44 @@ class TicketRouteActivity : DidyActivity() {
         }
     }
 
-    private fun invalidateDepartureCompletion(items: List<CityModel>) {
-        departureAdapter.setItems(items)
-        if (departureEdit.isPopupShowing) {
-            departureEdit.refreshAutoCompleteResults()
+    private fun invalidateDepartureCompletion(items: List<CityModel>): Unit =
+        with(departureEdit) {
+            departureAdapter.setItems(items)
+            if (isPopupShowing) {
+                refreshAutoCompleteResults()
+            }
         }
-    }
 
-    private fun invalidateDestinationCompletion(items: List<CityModel>) {
-        destinationAdapter.setItems(items)
-        if (departureEdit.isPopupShowing) {
-            destinationEdit.refreshAutoCompleteResults()
+    private fun invalidateDestinationCompletion(items: List<CityModel>): Unit =
+        with(destinationEdit) {
+            destinationAdapter.setItems(items)
+            if (isPopupShowing) {
+                refreshAutoCompleteResults()
+            }
         }
-    }
 
-    private fun selectDepartureItem(position: Int) {
+    private fun selectDepartureItem(position: Int): Unit = with(departureEdit) {
         val city = departureAdapter.getItem(position)
         val label = departureAdapter.getLabel(city)
 
-        departureEdit.setText(label, false)
+        setText(label, false)
+        setSelection(label.length)
+
         viewModel.setSelectedDepartureCity(city)
 
         destinationEdit.requestFocus()
     }
 
-    private fun selectDestinationItem(position: Int) {
+    private fun selectDestinationItem(position: Int): Unit = with(destinationEdit) {
         val city = destinationAdapter.getItem(position)
         val label = destinationAdapter.getLabel(city)
 
-        destinationEdit.setText(label, false)
+        setText(label, false)
+        setSelection(label.length)
+
         viewModel.setSelectedDestinationCity(city)
 
-        destinationEdit.dismissDropDown()
+        dismissDropDown()
     }
 
     private fun invalidateInputState(input: InputModel) {
@@ -135,20 +141,21 @@ class TicketRouteActivity : DidyActivity() {
         departureView.applyCityInputState(input.departure)
     }
 
-    private fun TextInputLayout.applyCityInputState(state: InputState<CityModel>) = when (state) {
-        is NotEntered -> {
-            hideError()
-            editText?.setAirportLabel(null)
+    private fun TextInputLayout.applyCityInputState(state: InputState<CityModel>): Unit? =
+        when (state) {
+            is NotEntered -> {
+                hideError()
+                editText?.setAirportLabel(null)
+            }
+            is Entered -> {
+                hideError()
+                editText?.setAirportLabel(state.value.getAirportName())
+            }
+            is InputState.Error -> when (state) {
+                is NotSelected -> showError(R.string.ticket_route_activity_error_select_value)
+                else -> showError()
+            }
         }
-        is Entered -> {
-            hideError()
-            editText?.setAirportLabel(state.value.getAirportName())
-        }
-        is InputState.Error -> when (state) {
-            is NotSelected -> showError(R.string.ticket_route_activity_error_select_value)
-            else -> showError()
-        }
-    }
 
     private fun TextView.setAirportLabel(airportName: String?) {
         val airportLabel = airportName?.let {
