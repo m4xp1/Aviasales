@@ -108,13 +108,21 @@ class TicketRouteActivity : DidyActivity() {
 
     private fun selectDepartureItem(position: Int) {
         val city = departureAdapter.getItem(position)
+        val label = departureAdapter.getLabel(city)
+
+        departureEdit.setText(label, false)
         viewModel.setSelectedDepartureCity(city)
+
         destinationEdit.requestFocus()
     }
 
     private fun selectDestinationItem(position: Int) {
         val city = destinationAdapter.getItem(position)
+        val label = destinationAdapter.getLabel(city)
+
+        destinationEdit.setText(label, false)
         viewModel.setSelectedDestinationCity(city)
+
         destinationEdit.dismissDropDown()
     }
 
