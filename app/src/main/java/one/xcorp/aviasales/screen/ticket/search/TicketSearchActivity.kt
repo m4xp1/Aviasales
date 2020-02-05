@@ -9,7 +9,6 @@ import android.view.MotionEvent.*
 import android.view.animation.Interpolator
 import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat.getColor
-import androidx.core.view.doOnPreDraw
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
 import com.google.android.gms.maps.CameraUpdateFactory.*
@@ -102,10 +101,8 @@ class TicketSearchActivity : DidyActivity() {
             setMapStyle(loadRawResourceStyle(applicationContext, R.raw.google_map_style))
         }
 
-        getRootView().doOnPreDraw {
-            val markerBounds = setInitialMapMarkers()
-            setInitialCameraPosition(markerBounds)
-
+        val markerBounds = setInitialMapMarkers()
+        setInitialCameraPosition(markerBounds) {
             observe(viewModel.loadingState, ::invalidateLoadingState)
         }
     }
@@ -132,24 +129,31 @@ class TicketSearchActivity : DidyActivity() {
         return boundsBuilder.build()
     }
 
-    private fun setInitialCameraPosition(markerBounds: LatLngBounds) {
-        val displayBounds = getDisplayRect().toProjection(googleMap.projection)
-
-        if (!displayBounds.contains(markerBounds)) {
-            isTrackingMarkerEnabled = true
-            val cameraUpdate = newLatLngZoom(
-                departureCity.location.toLatLng(),
-                googleMap.minZoomLevel
-            )
-            googleMap.moveCamera(cameraUpdate)
-        } else {
-            val cameraUpdate = newLatLngBounds(
+    private fun setInitialCameraPosition(markerBounds: LatLngBounds, idleListener: () -> Unit) {
+        googleMap.moveCamera(
+            newLatLngBounds(
                 markerBounds,
                 resources.displayMetrics.widthPixels,
                 resources.displayMetrics.heightPixels,
                 resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
             )
-            googleMap.moveCamera(cameraUpdate)
+        )
+
+        googleMap.setOnCameraIdleListener {
+            googleMap.setOnCameraIdleListener(null)
+
+            val displayBounds = getDisplayRect().toProjection(googleMap.projection)
+            if (!displayBounds.contains(markerBounds)) {
+                isTrackingMarkerEnabled = true
+                googleMap.moveCamera(
+                    newLatLngZoom(
+                        departureCity.location.toLatLng(),
+                        googleMap.minZoomLevel
+                    )
+                )
+            }
+
+            idleListener()
         }
     }
 
