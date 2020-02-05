@@ -3,122 +3,128 @@ package one.xcorp.aviasales.screen.ticket.route
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
-import android.widget.Adapter
-import android.widget.AutoCompleteTextView
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_ticket_route.*
+import one.xcorp.aviasales.Application.Dependencies.applicationComponent
 import one.xcorp.aviasales.R
-import one.xcorp.aviasales.R.string.ticket_route_activity_error_hint_input_value
-import one.xcorp.aviasales.extension.hideError
-import one.xcorp.aviasales.extension.showError
-import one.xcorp.aviasales.extension.updateCompoundDrawable
+import one.xcorp.aviasales.dagger.TicketRouteComponent
+import one.xcorp.aviasales.dagger.TicketRouteComponent.Factory
+import one.xcorp.aviasales.extension.*
 import one.xcorp.aviasales.screen.ticket.route.adapter.CityAdapter
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
+import one.xcorp.aviasales.screen.ticket.route.model.InputModel
+import one.xcorp.aviasales.screen.ticket.route.model.InputModel.NotSelected
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
+import one.xcorp.didy.Injector
+import one.xcorp.didy.holder.injectWith
+import one.xcorp.lifecycle.observe
+import one.xcorp.mvvm.didy.DidyActivity
+import one.xcorp.mvvm.model.InputState
+import one.xcorp.mvvm.model.InputState.Entered
+import one.xcorp.mvvm.model.InputState.NotEntered
+import one.xcorp.mvvm.obtainViewModel
+import javax.inject.Inject
 
-class TicketRouteActivity : AppCompatActivity() {
+class TicketRouteActivity : DidyActivity() {
 
-    private val airportIconGenerator by lazy { AirportIconGenerator(this) }
+    @Inject
+    lateinit var departureAdapter: CityAdapter
+    @Inject
+    lateinit var destinationAdapter: CityAdapter
+    @Inject
+    lateinit var airportIconGenerator: AirportIconGenerator
 
-    private val departureAdapter by lazy { CityAdapter(layoutInflater) }
-    private val destinationAdapter by lazy { CityAdapter(layoutInflater) }
+    private lateinit var viewModel: TicketRouteViewModel
 
-    private var departureCity: CityModel? = null
-    private var destinationCity: CityModel? = null
+    private val injector = Injector<TicketRouteComponent> { it.inject(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_route)
 
-        departureEdit.setAdapter(departureAdapter)
-        watchFocusChanges(departureEdit)
-        departureEdit.setOnItemClickListener { _, _, position, _ ->
-            invalidateDepartureSelection(position)
+        configureDepartureEdit()
+        configureDestinationEdit()
+
+        viewModel = obtainViewModel(viewModelFactory) {
+            observe(departureCityCompletion, ::invalidateDepartureCompletion)
+            observe(destinationCityCompletion, ::invalidateDestinationCompletion)
+            observe(inputState, ::invalidateInputState)
+            findButton.watchClicks(::findTickets)
+        }
+    }
+
+    override fun onInject(savedInstanceState: Bundle?) = applicationComponent
+        .ticketRouteComponentHolder
+        .injectWith(injector, Factory::createComponent)
+
+    private fun configureDepartureEdit() = with(departureEdit) {
+        setAdapter(departureAdapter)
+        watchTouches(::showCompletion)
+        watchFocusChanges(::changeCompletionVisibility)
+        watchTextChanges {
+            viewModel.setSelectedDepartureCity(null)
+            viewModel.obtainDepartureCompletion(it)
+        }
+        watchItemClick { position ->
+            val city = departureAdapter.getItem(position)
+            viewModel.setSelectedDepartureCity(city)
             destinationEdit.requestFocus()
         }
-        watchTextChanges(departureView, ::invalidateDepartureSelection)
+    }
 
-        destinationEdit.setAdapter(destinationAdapter)
-        watchFocusChanges(destinationEdit)
-        destinationEdit.setOnItemClickListener { _, _, position, _ ->
-            invalidateDestinationSelection(position)
+    private fun configureDestinationEdit() = with(destinationEdit) {
+        setAdapter(destinationAdapter)
+        watchTouches(::showCompletion)
+        watchFocusChanges(::changeCompletionVisibility)
+        watchTextChanges {
+            viewModel.setSelectedDestinationCity(null)
+            viewModel.obtainDestinationCompletion(it)
         }
-        watchTextChanges(destinationView, ::invalidateDestinationSelection)
-        destinationEdit.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == IME_ACTION_DONE) {
-                destinationEdit.dismissDropDown()
-                findButton.performClick()
-                true
-            } else false
+        watchItemClick { position ->
+            val city = destinationAdapter.getItem(position)
+            viewModel.setSelectedDestinationCity(city)
         }
-
-        findButton.setOnClickListener { onStartFindTickets() }
+        watchEditorAction(IME_ACTION_DONE) {
+            dismissDropDown()
+            findButton.performClick()
+        }
     }
 
-    private fun invalidateDepartureSelection(position: Int) {
-        departureCity = if (position == -1) null else departureAdapter.getItem(position)
-        setAirportLabel(departureEdit, departureCity?.getAirportName())
+    private fun invalidateDepartureCompletion(items: List<CityModel>) {
+        departureAdapter.setItems(items)
+        departureEdit.refreshAutoCompleteResults()
     }
 
-    private fun invalidateDestinationSelection(position: Int) {
-        destinationCity = if (position == -1) null else destinationAdapter.getItem(position)
-        setAirportLabel(destinationEdit, destinationCity?.getAirportName())
+    private fun invalidateDestinationCompletion(items: List<CityModel>) {
+        destinationAdapter.setItems(items)
+        destinationEdit.refreshAutoCompleteResults()
     }
 
-    private fun setAirportLabel(view: TextView, airportName: String?) {
+    private fun invalidateInputState(input: InputModel) {
+        destinationView.applyCityInputState(input.destination)
+        departureView.applyCityInputState(input.departure)
+    }
+
+    private fun TextInputLayout.applyCityInputState(state: InputState<CityModel>) = when (state) {
+        is NotEntered -> {
+            hideError()
+            editText?.setAirportLabel(null)
+        }
+        is Entered -> {
+            hideError()
+            editText?.setAirportLabel(state.value.getAirportName())
+        }
+        is InputState.Error -> when (state) {
+            is NotSelected -> showError(R.string.ticket_route_activity_error_select_value)
+            else -> showError()
+        }
+    }
+
+    private fun TextView.setAirportLabel(airportName: String?) {
         val airportLabel = airportName?.let {
             BitmapDrawable(resources, airportIconGenerator.makeIcon(airportName))
         }
-        view.updateCompoundDrawable(end = airportLabel)
+        updateCompoundDrawable(end = airportLabel)
     }
-
-    private fun watchTextChanges(
-        view: TextInputLayout,
-        invalidateItemSelection: (Int) -> Unit
-    ) = view.editText?.let { edit ->
-        edit.addTextChangedListener(afterTextChanged = {
-            view.hideError()
-
-            val adapter = (edit as? AutoCompleteTextView)?.adapter
-            adapter?.let {
-                val position = adapter.findItem(edit.text.toString())
-                invalidateItemSelection(position)
-            }
-        })
-    }
-
-    private fun watchFocusChanges(view: AutoCompleteTextView) {
-        view.setOnFocusChangeListener { _, hasFocus ->
-            if (hasFocus) {
-                view.showDropDown()
-            } else {
-                view.dismissDropDown()
-            }
-        }
-    }
-
-    private fun onStartFindTickets() {
-        departureView.hideError()
-        destinationView.hideError()
-
-        if (destinationCity == null) {
-            destinationView.showError(ticket_route_activity_error_hint_input_value)
-            destinationEdit.requestFocus()
-        }
-        if (departureCity == null) {
-            departureView.showError(ticket_route_activity_error_hint_input_value)
-            departureView.requestFocus()
-        }
-
-        if (departureView.isErrorEnabled || destinationView.isErrorEnabled) {
-            return
-        }
-    }
-
-    private fun Adapter.findItem(item: String): Int = (0 until count)
-        .map { getItem(it) }
-        .indexOfFirst { it.toString() == item }
 }
