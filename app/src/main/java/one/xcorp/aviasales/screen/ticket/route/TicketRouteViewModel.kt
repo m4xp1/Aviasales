@@ -1,23 +1,23 @@
 package one.xcorp.aviasales.screen.ticket.route
 
-import android.widget.Toast
-import android.widget.Toast.LENGTH_SHORT
 import androidx.lifecycle.LiveData
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
-import one.xcorp.aviasales.Application.Dependencies.applicationComponent
 import one.xcorp.aviasales.domain.usecase.city.find.FindCityUseCase
+import one.xcorp.aviasales.navigation.ticket.TicketNavigator
 import one.xcorp.aviasales.screen.ticket.route.mapper.toCityModel
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.route.model.InputModel
 import one.xcorp.aviasales.screen.ticket.route.model.InputModel.NotSelected
 import one.xcorp.mvvm.model.InputState
+import one.xcorp.mvvm.model.InputState.Entered
 import one.xcorp.mvvm.model.InputState.NotEntered
 import one.xcorp.mvvm.rx.RxViewModel
 import java.util.concurrent.TimeUnit.MILLISECONDS
 import javax.inject.Inject
 
 class TicketRouteViewModel @Inject constructor(
+    private val navigator: TicketNavigator,
     private val findCity: FindCityUseCase
 ) : RxViewModel() {
 
@@ -63,7 +63,10 @@ class TicketRouteViewModel @Inject constructor(
         if (checkedInputState.isContainsErrors) {
             inputStateSubject.onNext(checkedInputState)
         } else {
-            Toast.makeText(applicationComponent.context, "findTickets", LENGTH_SHORT).show()
+            val departureInput = checkedInputState.departure as Entered
+            val destinationInput = checkedInputState.destination as Entered
+
+            navigator.launchTicketSearch(departureInput.value, destinationInput.value)
         }
     }
 
