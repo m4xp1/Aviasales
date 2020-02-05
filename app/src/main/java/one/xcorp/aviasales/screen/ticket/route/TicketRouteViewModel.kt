@@ -1,8 +1,11 @@
 package one.xcorp.aviasales.screen.ticket.route
 
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.lifecycle.LiveData
 import io.reactivex.subjects.PublishSubject
 import io.reactivex.subjects.Subject
+import one.xcorp.aviasales.Application.Dependencies.applicationComponent
 import one.xcorp.aviasales.domain.usecase.city.find.FindCityUseCase
 import one.xcorp.aviasales.screen.ticket.route.mapper.toCityModel
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
@@ -34,19 +37,21 @@ class TicketRouteViewModel @Inject constructor(
         inputState = inputStateSubject.startWith(InputModel()).toLiveData()
     }
 
-    fun obtainDepartureCompletion(query: String) = departureCityCompletionSubject.onNext(query)
+    fun obtainDepartureCompletion(query: String): Unit =
+        departureCityCompletionSubject.onNext(query)
 
-    fun obtainDestinationCompletion(query: String) = destinationCityCompletionSubject.onNext(query)
+    fun obtainDestinationCompletion(query: String): Unit =
+        destinationCityCompletionSubject.onNext(query)
 
-    fun setSelectedDepartureCity(city: CityModel?) = inputState.value?.run {
+    fun setSelectedDepartureCity(city: CityModel?): Unit? = inputState.value?.run {
         inputStateSubject.onNext(copy(departure = InputState(city)))
     }
 
-    fun setSelectedDestinationCity(city: CityModel?) = inputState.value?.run {
+    fun setSelectedDestinationCity(city: CityModel?): Unit? = inputState.value?.run {
         inputStateSubject.onNext(copy(destination = InputState(city)))
     }
 
-    fun findTickets() = inputState.value?.let { currentInputState ->
+    fun findTickets(): Unit? = inputState.value?.let { currentInputState ->
         var checkedInputState = currentInputState
         if (currentInputState.departure == NotEntered) {
             checkedInputState = checkedInputState.copy(departure = NotSelected)
@@ -58,7 +63,7 @@ class TicketRouteViewModel @Inject constructor(
         if (currentInputState != checkedInputState) {
             inputStateSubject.onNext(checkedInputState)
         } else {
-
+            Toast.makeText(applicationComponent.context, "findTickets", LENGTH_SHORT).show()
         }
     }
 
