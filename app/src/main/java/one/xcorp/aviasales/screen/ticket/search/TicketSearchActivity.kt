@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.animation.Interpolator
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.animation.addListener
 import androidx.core.content.ContextCompat.getColor
 import androidx.core.view.doOnPreDraw
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
@@ -19,21 +19,40 @@ import com.google.android.gms.maps.model.*
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromBitmap
 import com.google.android.gms.maps.model.BitmapDescriptorFactory.fromResource
 import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
+import one.xcorp.aviasales.Application.Dependencies.applicationComponent
 import one.xcorp.aviasales.R
 import one.xcorp.aviasales.R.integer.ticket_search_activity_average_animation_duration
 import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_duration
+import one.xcorp.aviasales.dagger.TicketSearchComponent
+import one.xcorp.aviasales.dagger.qualifier.DepartureCity
+import one.xcorp.aviasales.dagger.qualifier.DestinationCity
 import one.xcorp.aviasales.extension.*
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
+import one.xcorp.aviasales.screen.ticket.search.model.StateModel
+import one.xcorp.didy.Injector
+import one.xcorp.didy.holder.injectWith
+import one.xcorp.lifecycle.observe
+import one.xcorp.mvvm.didy.DidyActivity
+import one.xcorp.mvvm.obtainViewModel
 import java.util.concurrent.TimeUnit.SECONDS
+import javax.inject.Inject
 
-class TicketSearchActivity : AppCompatActivity() {
+class TicketSearchActivity : DidyActivity() {
 
-    private val airportIconGenerator by lazy { AirportIconGenerator(this) }
+    @Inject
+    @DepartureCity
+    lateinit var departureCity: CityModel
 
-    private lateinit var departureCity: CityModel
-    private lateinit var destinationCity: CityModel
+    @Inject
+    @DestinationCity
+    lateinit var destinationCity: CityModel
+
+    @Inject
+    lateinit var airportIconGenerator: AirportIconGenerator
+
+    private lateinit var viewModel: TicketSearchViewModel
 
     private lateinit var googleMap: GoogleMap
     private lateinit var planeMarker: Marker
@@ -51,31 +70,27 @@ class TicketSearchActivity : AppCompatActivity() {
         resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_route_width).toFloat()
     }
 
+    private val injector = Injector<TicketSearchComponent> { it.inject(this) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_search)
 
-        departureCity = requireNotNull(intent.getParcelableExtra(KEY_DEPARTURE_CITY))
-        destinationCity = requireNotNull(intent.getParcelableExtra(KEY_DESTINATION_CITY))
+        viewModel = obtainViewModel(viewModelFactory)
 
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map_fragment) as SupportMapFragment
         mapFragment.getMapAsync(::onMapReady)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        planeMarkerAnimatorPlayTime =
-            savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putLong(
-            STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME,
-            planeMarkerAnimator?.currentPlayTime ?: planeMarkerAnimatorPlayTime
-        )
-    }
+    override fun onInject(savedInstanceState: Bundle?) = applicationComponent
+        .ticketSearchComponentHolder
+        .injectWith(injector) {
+            createComponent(
+                requireNotNull(intent.getParcelableExtra(KEY_DEPARTURE_CITY)),
+                requireNotNull(intent.getParcelableExtra(KEY_DESTINATION_CITY))
+            )
+        }
 
     private fun onMapReady(map: GoogleMap) {
         googleMap = map.apply {
@@ -91,7 +106,7 @@ class TicketSearchActivity : AppCompatActivity() {
             val markerBounds = setInitialMapMarkers()
             setInitialCameraPosition(markerBounds)
 
-            startPlaneMarkerAnimation()
+            observe(viewModel.loadingState, ::invalidateLoadingState)
         }
     }
 
@@ -138,6 +153,20 @@ class TicketSearchActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+        planeMarkerAnimatorPlayTime =
+            savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(
+            STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME,
+            planeMarkerAnimator?.currentPlayTime ?: planeMarkerAnimatorPlayTime
+        )
+    }
+
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
         when (event.action and ACTION_MASK) {
             ACTION_DOWN -> isOnTouchStarted = true
@@ -179,6 +208,11 @@ class TicketSearchActivity : AppCompatActivity() {
         return googleMap.addMarker(markerOptions)
     }
 
+    private fun invalidateLoadingState(state: StateModel): Unit = when (state) {
+        is StateModel.Loading -> startPlaneMarkerAnimation()
+        is StateModel.Success -> endPlaneMarkerAnimation()
+    }
+
     private fun startPlaneMarkerAnimation() {
         val duration = resources.getInteger(ticket_search_activity_average_animation_duration)
         animatePlaneMarker(
@@ -191,13 +225,18 @@ class TicketSearchActivity : AppCompatActivity() {
 
     private fun endPlaneMarkerAnimation() {
         val duration = resources.getInteger(ticket_search_activity_final_animation_duration)
-        animatePlaneMarker(SECONDS.toMillis(duration.toLong()), FastOutLinearInInterpolator())
+        animatePlaneMarker(
+            SECONDS.toMillis(duration.toLong()),
+            FastOutLinearInInterpolator(),
+            endListener = ::finish
+        )
     }
 
     private fun animatePlaneMarker(
         duration: Long,
         interpolator: Interpolator,
-        playTime: Long = 0L
+        playTime: Long = 0L,
+        endListener: (() -> Unit)? = null
     ) {
         planeMarkerAnimator?.cancel()
 
@@ -209,6 +248,7 @@ class TicketSearchActivity : AppCompatActivity() {
             if (isTrackingMarkerEnabled) {
                 addUpdateListener { updateCameraPosition() }
             }
+            endListener?.run { addListener(onEnd = { invoke() }) }
             start()
         }
     }
