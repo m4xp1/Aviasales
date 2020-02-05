@@ -4,6 +4,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
+import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_ticket_route.*
@@ -96,44 +97,49 @@ class TicketRouteActivity : DidyActivity() {
         }
     }
 
-    private fun invalidateDepartureCompletion(items: List<CityModel>): Unit =
-        with(departureEdit) {
-            departureAdapter.setItems(items)
-            if (isPopupShowing) {
-                refreshAutoCompleteResults()
-            }
+    private fun invalidateDepartureCompletion(items: List<CityModel>) =
+        invalidateCityCompletion(departureEdit, departureAdapter, items)
+
+    private fun invalidateDestinationCompletion(items: List<CityModel>) =
+        invalidateCityCompletion(destinationEdit, destinationAdapter, items)
+
+    private fun invalidateCityCompletion(
+        edit: AutoCompleteTextView,
+        adapter: CityAdapter,
+        items: List<CityModel>
+    ) {
+        adapter.setItems(items)
+        if (edit.isPopupShowing) {
+            edit.refreshAutoCompleteResults()
         }
+    }
 
-    private fun invalidateDestinationCompletion(items: List<CityModel>): Unit =
-        with(destinationEdit) {
-            destinationAdapter.setItems(items)
-            if (isPopupShowing) {
-                refreshAutoCompleteResults()
-            }
-        }
-
-    private fun selectDepartureItem(position: Int): Unit = with(departureEdit) {
-        val city = departureAdapter.getItem(position)
-        val label = departureAdapter.getLabel(city)
-
-        setText(label, false)
-        setSelection(label.length)
-
+    private fun selectDepartureItem(position: Int) {
+        val city = selectCityItem(departureEdit, departureAdapter, position)
         viewModel.setSelectedDepartureCity(city)
 
         destinationEdit.requestFocus()
     }
 
-    private fun selectDestinationItem(position: Int): Unit = with(destinationEdit) {
-        val city = destinationAdapter.getItem(position)
-        val label = destinationAdapter.getLabel(city)
-
-        setText(label, false)
-        setSelection(label.length)
-
+    private fun selectDestinationItem(position: Int) {
+        val city = selectCityItem(destinationEdit, destinationAdapter, position)
         viewModel.setSelectedDestinationCity(city)
 
-        dismissDropDown()
+        destinationEdit.dismissDropDown()
+    }
+
+    private fun selectCityItem(
+        edit: AutoCompleteTextView,
+        adapter: CityAdapter,
+        position: Int
+    ): CityModel {
+        val city = adapter.getItem(position)
+        val label = adapter.getLabel(city)
+
+        edit.setText(label, false)
+        edit.setSelection(label.length)
+
+        return city
     }
 
     private fun invalidateInputState(input: InputModel) {
