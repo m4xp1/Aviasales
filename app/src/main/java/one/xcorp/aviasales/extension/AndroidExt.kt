@@ -113,6 +113,10 @@ fun AutoCompleteTextView.showCompletion() {
 fun AutoCompleteTextView.changeCompletionVisibility(isVisible: Boolean) =
     if (isVisible) showCompletion() else dismissDropDown()
 
+fun AutoCompleteTextView.watchItemClick(block: (Int) -> Unit) {
+    setOnItemClickListener { _, _, position, _ -> block.invoke(position) }
+}
+
 fun Activity.getRootView(): View =
     findViewById<View>(android.R.id.content)
 
