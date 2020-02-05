@@ -44,6 +44,10 @@ class TicketRouteActivity : DidyActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_route)
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
 
         configureDepartureEdit()
         configureDestinationEdit()
@@ -141,8 +145,8 @@ class TicketRouteActivity : DidyActivity() {
     }
 
     private fun invalidateInputState(input: InputModel) {
-        destinationView.applyCityInputState(input.destination)
         departureView.applyCityInputState(input.departure)
+        destinationView.applyCityInputState(input.destination)
     }
 
     private fun TextInputLayout.applyCityInputState(state: InputState<CityModel>): Unit? =
