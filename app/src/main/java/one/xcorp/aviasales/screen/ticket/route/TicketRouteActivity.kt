@@ -3,6 +3,7 @@ package one.xcorp.aviasales.screen.ticket.route
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
+import android.view.inputmethod.EditorInfo.IME_ACTION_NEXT
 import android.widget.TextView
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.activity_ticket_route.*
@@ -66,10 +67,13 @@ class TicketRouteActivity : DidyActivity() {
             viewModel.setSelectedDepartureCity(null)
             viewModel.obtainDepartureCompletion(it)
         }
-        watchItemClick { position ->
-            val city = departureAdapter.getItem(position)
-            viewModel.setSelectedDepartureCity(city)
-            destinationEdit.requestFocus()
+        watchItemClick(::selectDepartureItem)
+        watchEditorAction(IME_ACTION_NEXT) {
+            if (!isPopupShowing) {
+                showCompletion()
+            } else {
+                selectDepartureItem(0)
+            }
         }
     }
 
@@ -81,13 +85,14 @@ class TicketRouteActivity : DidyActivity() {
             viewModel.setSelectedDestinationCity(null)
             viewModel.obtainDestinationCompletion(it)
         }
-        watchItemClick { position ->
-            val city = destinationAdapter.getItem(position)
-            viewModel.setSelectedDestinationCity(city)
-        }
+        watchItemClick(::selectDestinationItem)
         watchEditorAction(IME_ACTION_DONE) {
-            dismissDropDown()
-            findButton.performClick()
+            if (!isPopupShowing) {
+                showCompletion()
+            } else {
+                selectDestinationItem(0)
+                findButton.performClick()
+            }
         }
     }
 
@@ -99,6 +104,18 @@ class TicketRouteActivity : DidyActivity() {
     private fun invalidateDestinationCompletion(items: List<CityModel>) {
         destinationAdapter.setItems(items)
         destinationEdit.refreshAutoCompleteResults()
+    }
+
+    private fun selectDepartureItem(position: Int) {
+        val city = departureAdapter.getItem(position)
+        viewModel.setSelectedDepartureCity(city)
+        destinationEdit.requestFocus()
+    }
+
+    private fun selectDestinationItem(position: Int) {
+        val city = destinationAdapter.getItem(position)
+        viewModel.setSelectedDestinationCity(city)
+        destinationEdit.dismissDropDown()
     }
 
     private fun invalidateInputState(input: InputModel) {
