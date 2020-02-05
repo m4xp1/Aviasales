@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.View
+import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.annotation.AnyRes
 import androidx.annotation.AttrRes
@@ -99,6 +100,10 @@ fun TextInputLayout.hideError() {
         isErrorEnabled = false
         error = null
     }
+}
+
+fun AutoCompleteTextView.showCompletion() {
+    if (!text.isNullOrBlank() && !isPopupShowing) showDropDown()
 }
 
 fun Activity.getRootView(): View =
