@@ -88,12 +88,10 @@ class TicketRouteActivity : DidyActivity() {
         }
         watchItemClick(::selectDestinationItem)
         watchEditorAction(IME_ACTION_DONE) {
-            if (!isPopupShowing) {
-                showCompletion()
-            } else {
+            if (isPopupShowing) {
                 selectDestinationItem(0)
-                findButton.performClick()
             }
+            findButton.performClick()
         }
     }
 
