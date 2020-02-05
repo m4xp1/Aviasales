@@ -26,17 +26,29 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
         id
     }
 
-fun View.watchFocusChanges(block: (Boolean) -> Unit) = setOnFocusChangeListener { _, hasFocus ->
-    block.invoke(hasFocus)
+fun Activity.getRootView(): View =
+    findViewById<View>(android.R.id.content)
+
+fun Activity.getDisplayRect(): Rect =
+    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
+
+fun View.watchFocusChanges(block: (Boolean) -> Unit) {
+    setOnFocusChangeListener { _, hasFocus ->
+        block.invoke(hasFocus)
+    }
 }
 
-fun <T> View.setOnClickListener(block: () -> T) = setOnClickListener { block.invoke() }
+fun <T> View.watchClicks(block: () -> T) {
+    setOnClickListener { block.invoke() }
+}
 
-fun View.watchTouches(block: () -> Unit) = setOnTouchListener { _, event ->
-    when (event.action and MotionEvent.ACTION_MASK) {
-        MotionEvent.ACTION_UP -> block.invoke()
+fun View.watchTouches(block: () -> Unit) {
+    setOnTouchListener { _, event ->
+        when (event.action and MotionEvent.ACTION_MASK) {
+            MotionEvent.ACTION_UP -> block.invoke()
+        }
+        false
     }
-    false
 }
 
 fun TextView.updateCompoundDrawable(
@@ -46,7 +58,6 @@ fun TextView.updateCompoundDrawable(
     bottom: Drawable? = CurrentDrawable
 ) {
     val drawables = compoundDrawablesRelative
-
     if (start !== CurrentDrawable) {
         drawables[0] = start
     }
@@ -59,7 +70,6 @@ fun TextView.updateCompoundDrawable(
     if (bottom !== CurrentDrawable) {
         drawables[3] = bottom
     }
-
     setCompoundDrawablesRelativeWithIntrinsicBounds(
         drawables[0],
         drawables[1],
@@ -68,7 +78,7 @@ fun TextView.updateCompoundDrawable(
     )
 }
 
-fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
+fun TextView.watchEditorAction(imeAction: Int, block: () -> Unit) {
     setOnEditorActionListener { _, actionId, _ ->
         if (actionId == imeAction) {
             block.invoke()
@@ -78,9 +88,7 @@ fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
 }
 
 fun TextView.watchTextChanges(block: (String) -> Unit) {
-    addTextChangedListener(afterTextChanged = {
-        block.invoke(text.toString())
-    })
+    addTextChangedListener(afterTextChanged = { block.invoke(text.toString()) })
 }
 
 fun TextInputLayout.showError(@StringRes resId: Int, requestFocus: Boolean = true) {
@@ -110,15 +118,10 @@ fun AutoCompleteTextView.showCompletion() {
     if (!text.isNullOrBlank() && !isPopupShowing) showDropDown()
 }
 
-fun AutoCompleteTextView.changeCompletionVisibility(isVisible: Boolean) =
+fun AutoCompleteTextView.changeCompletionVisibility(isVisible: Boolean) {
     if (isVisible) showCompletion() else dismissDropDown()
+}
 
 fun AutoCompleteTextView.watchItemClick(block: (Int) -> Unit) {
     setOnItemClickListener { _, _, position, _ -> block.invoke(position) }
 }
-
-fun Activity.getRootView(): View =
-    findViewById<View>(android.R.id.content)
-
-fun Activity.getDisplayRect(): Rect =
-    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
