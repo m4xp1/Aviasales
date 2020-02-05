@@ -9,7 +9,6 @@ import android.view.MotionEvent.*
 import android.view.animation.Interpolator
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat.getColor
-import androidx.core.graphics.contains
 import androidx.core.view.doOnPreDraw
 import androidx.interpolator.view.animation.FastOutLinearInInterpolator
 import androidx.interpolator.view.animation.LinearOutSlowInInterpolator
@@ -23,10 +22,7 @@ import com.google.android.gms.maps.model.MapStyleOptions.loadRawResourceStyle
 import one.xcorp.aviasales.R
 import one.xcorp.aviasales.R.integer.ticket_search_activity_average_animation_duration
 import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_duration
-import one.xcorp.aviasales.extension.animate
-import one.xcorp.aviasales.extension.bearingTo
-import one.xcorp.aviasales.extension.getDisplayRect
-import one.xcorp.aviasales.extension.getRootView
+import one.xcorp.aviasales.extension.*
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
@@ -122,23 +118,21 @@ class TicketSearchActivity : AppCompatActivity() {
     }
 
     private fun setInitialCameraPosition(markerBounds: LatLngBounds) {
-        var cameraUpdate = newLatLngBounds(
-            markerBounds,
-            resources.displayMetrics.widthPixels,
-            resources.displayMetrics.heightPixels,
-            resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
-        )
-        googleMap.moveCamera(cameraUpdate)
+        val displayBounds = getDisplayRect().toProjection(googleMap.projection)
 
-        val southWest = googleMap.projection.toScreenLocation(markerBounds.southwest)
-        val northEast = googleMap.projection.toScreenLocation(markerBounds.northeast)
-
-        val displayRect = getDisplayRect()
-        if (!displayRect.contains(southWest) && !displayRect.contains(northEast)) {
+        if (!displayBounds.contains(markerBounds)) {
             isTrackingMarkerEnabled = true
-            cameraUpdate = newLatLngZoom(
+            val cameraUpdate = newLatLngZoom(
                 departureCity.location.toLatLng(),
                 googleMap.minZoomLevel
+            )
+            googleMap.moveCamera(cameraUpdate)
+        } else {
+            val cameraUpdate = newLatLngBounds(
+                markerBounds,
+                resources.displayMetrics.widthPixels,
+                resources.displayMetrics.heightPixels,
+                resources.getDimensionPixelSize(R.dimen.ticket_search_activity_map_extent_padding)
             )
             googleMap.moveCamera(cameraUpdate)
         }
