@@ -30,9 +30,10 @@ class TicketSearchViewModel @Inject constructor(
         .getInteger(R.integer.ticket_search_activity_average_animation_duration)
         .let { it * 0.6f }
         .toLong()
+    private val minDuration = (maxDuration * 0.3f).toLong()
 
     init {
-        loadingState = searchTickets(nextLong(maxDuration)).toLiveData()
+        loadingState = searchTickets(nextLong(minDuration, maxDuration)).toLiveData()
     }
 
     private fun searchTickets(delay: Long): Observable<StateModel> =
