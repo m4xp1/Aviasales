@@ -110,6 +110,9 @@ fun AutoCompleteTextView.showCompletion() {
     if (!text.isNullOrBlank() && !isPopupShowing) showDropDown()
 }
 
+fun AutoCompleteTextView.changeCompletionVisibility(isVisible: Boolean) =
+    if (isVisible) showCompletion() else dismissDropDown()
+
 fun Activity.getRootView(): View =
     findViewById<View>(android.R.id.content)
 
