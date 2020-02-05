@@ -23,5 +23,5 @@ class TicketRouteModule {
     @Provides
     @IntoMap
     @ViewModelKey(TicketRouteViewModel::class)
-    fun cardsViewViewModel(viewModel: TicketRouteViewModel): ViewModel = viewModel
+    fun ticketRouteViewModel(viewModel: TicketRouteViewModel): ViewModel = viewModel
 }
