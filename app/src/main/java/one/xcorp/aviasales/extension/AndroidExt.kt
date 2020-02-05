@@ -11,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.AnyRes
 import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
+import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 
 private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
@@ -61,6 +62,12 @@ fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
             true
         } else false
     }
+}
+
+fun TextView.watchTextChanges(block: (String) -> Unit) {
+    addTextChangedListener(afterTextChanged = {
+        block.invoke(text.toString())
+    })
 }
 
 fun TextInputLayout.showError(@StringRes resId: Int) {
