@@ -1,6 +1,7 @@
 package one.xcorp.aviasales.screen.ticket.route.model
 
 import one.xcorp.mvvm.model.InputState
+import one.xcorp.mvvm.model.InputState.Error
 import one.xcorp.mvvm.model.InputState.NotEntered
 
 data class InputModel(
@@ -8,5 +9,8 @@ data class InputModel(
     val destination: InputState<CityModel> = NotEntered
 ) {
 
-    object NotSelected : InputState.Error()
+    val isContainsErrors: Boolean
+        get() = arrayOf(departure, destination).any { it is Error }
+
+    object NotSelected : Error()
 }

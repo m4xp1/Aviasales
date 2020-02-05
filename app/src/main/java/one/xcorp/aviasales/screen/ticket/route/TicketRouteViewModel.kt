@@ -60,7 +60,7 @@ class TicketRouteViewModel @Inject constructor(
             checkedInputState = checkedInputState.copy(destination = NotSelected)
         }
 
-        if (currentInputState != checkedInputState) {
+        if (checkedInputState.isContainsErrors) {
             inputStateSubject.onNext(checkedInputState)
         } else {
             Toast.makeText(applicationComponent.context, "findTickets", LENGTH_SHORT).show()
