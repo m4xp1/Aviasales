@@ -1,5 +1,6 @@
 package one.xcorp.lifecycle.rx
 
+import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.reactivex.*
@@ -21,7 +22,13 @@ fun <T> Observable<T>.toLiveData(
 
 fun <T> Flowable<T>.toLiveData(block: (Disposable) -> Boolean): LiveData<T> {
     return PublisherLiveData<T> { liveData ->
-        block.invoke(subscribe { liveData.postValue(it) })
+        block.invoke(subscribe {
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                liveData.value = it
+            } else {
+                liveData.postValue(it)
+            }
+        })
     }
 }
 
