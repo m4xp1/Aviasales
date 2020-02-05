@@ -46,6 +46,10 @@ class TicketRouteActivity : DidyActivity() {
         setContentView(R.layout.activity_ticket_route)
     }
 
+    override fun onInject(savedInstanceState: Bundle?) = applicationComponent
+        .ticketRouteComponentHolder
+        .injectWith(injector, Factory::createComponent)
+
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
 
@@ -59,10 +63,6 @@ class TicketRouteActivity : DidyActivity() {
             findButton.watchClicks(::findTickets)
         }
     }
-
-    override fun onInject(savedInstanceState: Bundle?) = applicationComponent
-        .ticketRouteComponentHolder
-        .injectWith(injector, Factory::createComponent)
 
     private fun configureDepartureEdit(): Unit = with(departureEdit) {
         setAdapter(departureAdapter)
