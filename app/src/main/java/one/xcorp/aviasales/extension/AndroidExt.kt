@@ -75,6 +75,11 @@ fun TextInputLayout.showError(@StringRes resId: Int) {
     error = resources.getString(resId)
 }
 
+fun TextInputLayout.showError(message: String? = null) {
+    isErrorEnabled = true
+    error = message
+}
+
 fun TextInputLayout.hideError() {
     if (isErrorEnabled) {
         isErrorEnabled = false
