@@ -25,15 +25,6 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
 
 fun <T> View.setOnClickListener(block: () -> T) = setOnClickListener { block.invoke() }
 
-fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
-    setOnEditorActionListener { _, actionId, _ ->
-        if (actionId == imeAction) {
-            block.invoke()
-            true
-        } else false
-    }
-}
-
 fun TextView.updateCompoundDrawable(
     start: Drawable? = CurrentDrawable,
     top: Drawable? = CurrentDrawable,
@@ -61,6 +52,15 @@ fun TextView.updateCompoundDrawable(
         drawables[2],
         drawables[3]
     )
+}
+
+fun TextView.setOnEditorActionListener(imeAction: Int, block: () -> Unit) {
+    setOnEditorActionListener { _, actionId, _ ->
+        if (actionId == imeAction) {
+            block.invoke()
+            true
+        } else false
+    }
 }
 
 fun TextInputLayout.showError(@StringRes resId: Int) {
