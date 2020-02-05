@@ -70,14 +70,20 @@ fun TextView.watchTextChanges(block: (String) -> Unit) {
     })
 }
 
-fun TextInputLayout.showError(@StringRes resId: Int) {
+fun TextInputLayout.showError(@StringRes resId: Int, requestFocus: Boolean = true) {
     isErrorEnabled = true
     error = resources.getString(resId)
+    if (requestFocus) {
+        editText?.requestFocus()
+    }
 }
 
-fun TextInputLayout.showError(message: String? = null) {
+fun TextInputLayout.showError(message: String? = null, requestFocus: Boolean = true) {
     isErrorEnabled = true
     error = message
+    if (requestFocus) {
+        editText?.requestFocus()
+    }
 }
 
 fun TextInputLayout.hideError() {
