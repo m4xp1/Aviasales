@@ -16,6 +16,8 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
+import kotlin.math.atan2
+import kotlin.math.ceil
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -127,4 +129,11 @@ fun Point.distanceTo(point: Point): Double {
     val deltaX = (x - point.x).toDouble()
     val deltaY = (y - point.y).toDouble()
     return sqrt(deltaX.pow(2) + deltaY.pow(2))
+}
+
+fun Point.angleTo(point: Point): Double {
+    val deltaX = (point.x - x).toDouble()
+    val deltaY = (y - point.y).toDouble()
+    val angle = Math.toDegrees(atan2(deltaX, deltaY)) - 90
+    return angle + ceil(-angle / 360) * 360
 }
