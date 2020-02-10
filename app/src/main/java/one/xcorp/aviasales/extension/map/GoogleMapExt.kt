@@ -1,4 +1,4 @@
-package one.xcorp.aviasales.extension
+package one.xcorp.aviasales.extension.map
 
 import android.animation.ValueAnimator
 import android.graphics.Point
@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Marker
 import com.google.maps.android.SphericalUtil
+import one.xcorp.aviasales.extension.map.LatLngInterpolator.Spherical
 
 fun Rect.toProjection(projection: Projection): LatLngBounds {
     val southWest = projection.fromScreenLocation(Point(left, bottom))
@@ -22,14 +23,15 @@ fun Rect.toProjection(projection: Projection): LatLngBounds {
 fun LatLngBounds.contains(bounds: LatLngBounds): Boolean =
     contains(bounds.southwest) && contains(bounds.northeast)
 
-fun LatLng.interpolate(dest: LatLng, fraction: Float): LatLng =
-    SphericalUtil.interpolate(this, dest, fraction.toDouble())
-
 fun LatLng.bearingTo(dest: LatLng): Float = SphericalUtil.computeHeading(this, dest).toFloat()
 
-fun Marker.animate(dest: LatLng): ValueAnimator = animate(listOf(dest))
+fun Marker.animate(dest: LatLng, interpolator: LatLngInterpolator = Spherical()): ValueAnimator =
+    animate(listOf(dest), interpolator)
 
-fun Marker.animate(route: List<LatLng>): ValueAnimator {
+fun Marker.animate(
+    route: List<LatLng>,
+    interpolator: LatLngInterpolator = Spherical()
+): ValueAnimator {
     require(route.isNotEmpty()) { "Cannot animate marker on empty route" }
 
     val positions = arrayListOf(position, *route.toTypedArray())
@@ -43,9 +45,11 @@ fun Marker.animate(route: List<LatLng>): ValueAnimator {
         val fraction = value - index
 
         if (animation.currentPlayTime >= animation.duration) {
-            position = positions[index].interpolate(route.last(), animation.animatedFraction)
+            position = interpolator.interpolate(
+                positions[index], route.last(), animation.animatedFraction
+            )
         } else {
-            position = positions[index].interpolate(positions[index + 1], fraction)
+            position = interpolator.interpolate(positions[index], positions[index + 1], fraction)
             if (fraction != 1f) { // keep latest bearing
                 rotation = position.bearingTo(positions[index + 1])
             }
