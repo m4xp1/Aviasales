@@ -3,6 +3,7 @@ package one.xcorp.aviasales.extension
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
@@ -15,6 +16,8 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
 
@@ -118,4 +121,10 @@ fun AutoCompleteTextView.changeCompletionVisibility(isVisible: Boolean) {
 
 fun AutoCompleteTextView.watchItemClick(block: (Int) -> Unit) {
     setOnItemClickListener { _, _, position, _ -> block.invoke(position) }
+}
+
+fun Point.distanceTo(point: Point): Double {
+    val deltaX = (x - point.x).toDouble()
+    val deltaY = (y - point.y).toDouble()
+    return sqrt(deltaX.pow(2) + deltaY.pow(2))
 }
