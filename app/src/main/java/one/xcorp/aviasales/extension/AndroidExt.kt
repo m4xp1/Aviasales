@@ -16,10 +16,7 @@ import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
-import kotlin.math.atan2
-import kotlin.math.ceil
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 private val CurrentDrawable = ColorDrawable(Color.TRANSPARENT)
 
@@ -136,4 +133,10 @@ fun Point.angleTo(point: Point): Double {
     val deltaY = (y - point.y).toDouble()
     val angle = Math.toDegrees(atan2(deltaX, deltaY)) - 90
     return angle + ceil(-angle / 360) * 360
+}
+
+fun Point.offset(distance: Double, angel: Double): Point {
+    val offsetX = (x + distance * cos(Math.toRadians(angel))).toInt()
+    val offsetY = (y + distance * sin(Math.toRadians(angel))).toInt()
+    return Point(offsetX, offsetY)
 }
