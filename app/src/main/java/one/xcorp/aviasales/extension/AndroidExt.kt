@@ -3,6 +3,7 @@ package one.xcorp.aviasales.extension
 import android.app.Activity
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Path
 import android.graphics.Point
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import android.widget.TextView
 import androidx.annotation.AnyRes
 import androidx.annotation.AttrRes
 import androidx.annotation.StringRes
+import androidx.core.graphics.flatten
 import androidx.core.widget.addTextChangedListener
 import com.google.android.material.textfield.TextInputLayout
 import kotlin.math.*
@@ -139,4 +141,23 @@ fun Point.offset(distance: Double, angel: Double): Point {
     val offsetX = (x + distance * cos(Math.toRadians(angel))).toInt()
     val offsetY = (y + distance * sin(Math.toRadians(angel))).toInt()
     return Point(offsetX, offsetY)
+}
+
+fun Point.cubicTo(
+    point2: Point,
+    point3: Point,
+    point4: Point,
+    error: Float = 0.5f
+): List<Point> = Path().apply {
+    moveTo(x.toFloat(), y.toFloat())
+    cubicTo(
+        point2.x.toFloat(), point2.y.toFloat(),
+        point3.x.toFloat(), point3.y.toFloat(),
+        point4.x.toFloat(), point4.y.toFloat()
+    )
+}.flatten(error).flatMap {
+    listOf(
+        Point(it.start.x.toInt(), it.start.y.toInt()),
+        Point(it.end.x.toInt(), it.end.y.toInt())
+    )
 }
