@@ -6,6 +6,16 @@ android {
     compileSdkVersion configuration.compileSdkVersion
     buildToolsVersion configuration.buildToolsVersion
 
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+    kapt {
+        correctErrorTypes true
+    }
     defaultConfig {
         minSdkVersion configuration.minSdkVersion
         targetSdkVersion configuration.targetSdkVersion
