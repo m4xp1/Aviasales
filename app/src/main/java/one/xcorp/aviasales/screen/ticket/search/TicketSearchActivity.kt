@@ -25,11 +25,9 @@ import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_dura
 import one.xcorp.aviasales.dagger.TicketSearchComponent
 import one.xcorp.aviasales.dagger.qualifier.DepartureCity
 import one.xcorp.aviasales.dagger.qualifier.DestinationCity
-import one.xcorp.aviasales.extension.getDisplayRect
 import one.xcorp.aviasales.extension.map.animate
 import one.xcorp.aviasales.extension.map.bearingTo
 import one.xcorp.aviasales.extension.map.contains
-import one.xcorp.aviasales.extension.map.toProjection
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.graphic.marker.AirportIconGenerator
@@ -133,7 +131,10 @@ class TicketSearchActivity : DidyActivity() {
         return boundsBuilder.build()
     }
 
-    private fun setInitialCameraPosition(markerBounds: LatLngBounds, idleListener: () -> Unit) {
+    private fun setInitialCameraPosition(
+        markerBounds: LatLngBounds,
+        onCompletedSettingPosition: () -> Unit
+    ) {
         googleMap.moveCamera(
             newLatLngBounds(
                 markerBounds,
@@ -146,8 +147,8 @@ class TicketSearchActivity : DidyActivity() {
         googleMap.setOnCameraIdleListener {
             googleMap.setOnCameraIdleListener(null)
 
-            val displayBounds = getDisplayRect().toProjection(googleMap.projection)
-            if (!displayBounds.contains(markerBounds)) {
+            val visibleRegion = googleMap.projection.visibleRegion.latLngBounds
+            if (!visibleRegion.contains(markerBounds)) {
                 isTrackingMarkerEnabled = true
                 googleMap.moveCamera(
                     newLatLngZoom(
@@ -157,7 +158,7 @@ class TicketSearchActivity : DidyActivity() {
                 )
             }
 
-            idleListener()
+            onCompletedSettingPosition()
         }
     }
 
