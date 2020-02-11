@@ -8,10 +8,8 @@ import one.xcorp.aviasales.extension.angleTo
 import one.xcorp.aviasales.extension.cubicTo
 import one.xcorp.aviasales.extension.distanceTo
 import one.xcorp.aviasales.extension.offset
-import javax.inject.Inject
 
-class BezierRouteGenerator @Inject constructor() :
-    RouteGenerator {
+class BezierRouteGenerator : RouteGenerator {
 
     override fun generate(
         googleMap: GoogleMap,
