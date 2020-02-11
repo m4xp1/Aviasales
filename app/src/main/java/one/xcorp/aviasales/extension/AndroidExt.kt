@@ -1,11 +1,9 @@
 package one.xcorp.aviasales.extension
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Path
 import android.graphics.Point
-import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
@@ -29,12 +27,6 @@ fun Context.getThemeAttribute(@AttrRes resId: Int, @AnyRes default: Int): Int =
         recycle()
         id
     }
-
-fun Activity.getRootView(): View =
-    findViewById<View>(android.R.id.content)
-
-fun Activity.getDisplayRect(): Rect =
-    Rect().also { windowManager.defaultDisplay.getRectSize(it) }
 
 fun View.watchFocusChanges(block: (Boolean) -> Unit) {
     setOnFocusChangeListener { _, hasFocus ->
