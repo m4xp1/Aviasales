@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.MotionEvent.*
 import android.view.animation.Interpolator
@@ -25,12 +26,14 @@ import one.xcorp.aviasales.R.integer.ticket_search_activity_final_animation_dura
 import one.xcorp.aviasales.dagger.TicketSearchComponent
 import one.xcorp.aviasales.dagger.qualifier.DepartureCity
 import one.xcorp.aviasales.dagger.qualifier.DestinationCity
+import one.xcorp.aviasales.extension.map.LatLngInterpolator
 import one.xcorp.aviasales.extension.map.animate
 import one.xcorp.aviasales.extension.map.bearingTo
 import one.xcorp.aviasales.extension.map.contains
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.search.graphic.marker.AirportIconGenerator
+import one.xcorp.aviasales.screen.ticket.search.graphic.route.RouteGenerator
 import one.xcorp.aviasales.screen.ticket.search.model.StateModel
 import one.xcorp.didy.Injector
 import one.xcorp.didy.holder.injectWith
@@ -53,13 +56,21 @@ class TicketSearchActivity : DidyActivity() {
     @Inject
     lateinit var airportIconGenerator: AirportIconGenerator
 
+    @Inject
+    lateinit var routeGenerator: RouteGenerator
+
+    @Inject
+    lateinit var latLngInterpolator: LatLngInterpolator
+
     private lateinit var viewModel: TicketSearchViewModel
 
     private lateinit var googleMap: GoogleMap
+    private lateinit var planeRoute: Polyline
     private lateinit var planeMarker: Marker
 
     private var planeMarkerAnimator: ValueAnimator? = null
-    private var planeMarkerAnimatorPlayTime: Long = 0L
+    private var planeMarkerAnimatorDuration: Long? = null
+    private var planeMarkerAnimatorPlayTime: Long? = null
     private var isTrackingMarkerEnabled = false
     private var isOnTouchStarted = false
 
@@ -116,7 +127,7 @@ class TicketSearchActivity : DidyActivity() {
 
         val pointsSet = mutableSetOf<LatLng>()
 
-        addPlaneRoute(departureLocation, destinationLocation)
+        planeRoute = addPlaneRoute(departureLocation, destinationLocation)
             .apply { pointsSet.addAll(points) }
         addAirportMarker(departureCity)
             .apply { pointsSet.add(position) }
@@ -164,16 +175,26 @@ class TicketSearchActivity : DidyActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        planeMarkerAnimatorPlayTime =
-            savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)
+        if (savedInstanceState.containsKey(STATE_PLANE_MARKER_ANIMATOR_DURATION)) {
+            planeMarkerAnimatorDuration =
+                savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_DURATION)
+        }
+        if (savedInstanceState.containsKey(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)) {
+            planeMarkerAnimatorPlayTime =
+                savedInstanceState.getLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME)
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putLong(
-            STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME,
-            planeMarkerAnimator?.currentPlayTime ?: planeMarkerAnimatorPlayTime
-        )
+        val duration = planeMarkerAnimator?.duration ?: planeMarkerAnimatorDuration
+        if (duration != null) {
+            outState.putLong(STATE_PLANE_MARKER_ANIMATOR_DURATION, duration)
+        }
+        val playTime = planeMarkerAnimator?.currentPlayTime ?: planeMarkerAnimatorPlayTime
+        if (playTime != null) {
+            outState.putLong(STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME, playTime)
+        }
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -194,10 +215,8 @@ class TicketSearchActivity : DidyActivity() {
         return googleMap.addMarker(markerOptions)
     }
 
-    private fun addPlaneRoute(departureLocation: LatLng, destinationLocation: LatLng): Polyline {
-        val polylineOptions = PolylineOptions()
-            .add(departureLocation, destinationLocation)
-            .geodesic(true)
+    private fun addPlaneRoute(departure: LatLng, destination: LatLng): Polyline {
+        val polylineOptions = routeGenerator.generate(googleMap, departure, destination)
             .color(getColor(this, R.color.plane_route))
             .pattern(listOf(Gap(dotLineGap), Dot()))
             .width(dotLineWidth)
@@ -223,22 +242,15 @@ class TicketSearchActivity : DidyActivity() {
     }
 
     private fun startPlaneMarkerAnimation() {
-        val duration = resources.getInteger(ticket_search_activity_average_animation_duration)
-        animatePlaneMarker(
-            SECONDS.toMillis(duration.toLong()),
-            LinearOutSlowInInterpolator(),
-            planeMarkerAnimatorPlayTime
+        val duration = planeMarkerAnimatorDuration ?: SECONDS.toMillis(
+            resources.getInteger(ticket_search_activity_average_animation_duration).toLong()
         )
-        planeMarkerAnimatorPlayTime = 0L
+        val playTime = planeMarkerAnimatorPlayTime ?: 0L
+        animatePlaneMarker(duration, LinearOutSlowInInterpolator(), playTime)
     }
 
     private fun endPlaneMarkerAnimation() {
-        val duration = resources.getInteger(ticket_search_activity_final_animation_duration)
-        animatePlaneMarker(
-            SECONDS.toMillis(duration.toLong()),
-            FastOutLinearInInterpolator(),
-            endListener = ::finish
-        )
+
     }
 
     private fun animatePlaneMarker(
@@ -249,16 +261,15 @@ class TicketSearchActivity : DidyActivity() {
     ) {
         planeMarkerAnimator?.cancel()
 
-        val destinationLocation = destinationCity.location.toLatLng()
-        planeMarkerAnimator = planeMarker.animate(destinationLocation).apply {
+        planeMarkerAnimator = planeMarker.animate(planeRoute.points, latLngInterpolator).apply {
             setDuration(duration)
             setInterpolator(interpolator)
-            currentPlayTime = playTime
             if (isTrackingMarkerEnabled) {
                 addUpdateListener { updateCameraPosition() }
             }
             endListener?.run { addListener(onEnd = { invoke() }) }
             start()
+            currentPlayTime = playTime
         }
     }
 
@@ -283,6 +294,7 @@ class TicketSearchActivity : DidyActivity() {
         private const val KEY_DEPARTURE_CITY = "departure_city"
         private const val KEY_DESTINATION_CITY = "destination_city"
 
+        private const val STATE_PLANE_MARKER_ANIMATOR_DURATION = "plane_marker_animator_duration"
         private const val STATE_PLANE_MARKER_ANIMATOR_PLAY_TIME = "plane_marker_animator_play_time"
 
         fun newIntent(

@@ -12,9 +12,6 @@ fun LatLngBounds.contains(bounds: LatLngBounds): Boolean =
 
 fun LatLng.bearingTo(dest: LatLng): Float = SphericalUtil.computeHeading(this, dest).toFloat()
 
-fun Marker.animate(dest: LatLng, interpolator: LatLngInterpolator = Spherical()): ValueAnimator =
-    animate(listOf(position, dest), interpolator)
-
 fun Marker.animate(
     route: List<LatLng>,
     interpolator: LatLngInterpolator = Spherical()
