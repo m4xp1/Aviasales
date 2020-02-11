@@ -17,7 +17,7 @@ import one.xcorp.aviasales.screen.ticket.route.adapter.CityAdapter
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
 import one.xcorp.aviasales.screen.ticket.route.model.InputModel
 import one.xcorp.aviasales.screen.ticket.route.model.InputModel.NotSelected
-import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
+import one.xcorp.aviasales.screen.ticket.search.graphic.marker.AirportIconGenerator
 import one.xcorp.didy.Injector
 import one.xcorp.didy.holder.injectWith
 import one.xcorp.lifecycle.observe

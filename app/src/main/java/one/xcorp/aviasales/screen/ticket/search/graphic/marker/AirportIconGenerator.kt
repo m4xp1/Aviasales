@@ -1,4 +1,4 @@
-package one.xcorp.aviasales.screen.ticket.search.marker
+package one.xcorp.aviasales.screen.ticket.search.graphic.marker
 
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity

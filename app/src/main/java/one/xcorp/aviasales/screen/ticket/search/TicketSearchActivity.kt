@@ -32,7 +32,7 @@ import one.xcorp.aviasales.extension.map.contains
 import one.xcorp.aviasales.extension.map.toProjection
 import one.xcorp.aviasales.screen.ticket.route.mapper.toLatLng
 import one.xcorp.aviasales.screen.ticket.route.model.CityModel
-import one.xcorp.aviasales.screen.ticket.search.marker.AirportIconGenerator
+import one.xcorp.aviasales.screen.ticket.search.graphic.marker.AirportIconGenerator
 import one.xcorp.aviasales.screen.ticket.search.model.StateModel
 import one.xcorp.didy.Injector
 import one.xcorp.didy.holder.injectWith

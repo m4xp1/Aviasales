@@ -1,4 +1,4 @@
-package one.xcorp.aviasales.screen.ticket.search.marker
+package one.xcorp.aviasales.screen.ticket.search.graphic.route
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,7 +10,8 @@ import one.xcorp.aviasales.extension.distanceTo
 import one.xcorp.aviasales.extension.offset
 import javax.inject.Inject
 
-class BezierRouteGenerator @Inject constructor() : RouteGenerator {
+class BezierRouteGenerator @Inject constructor() :
+    RouteGenerator {
 
     override fun generate(
         googleMap: GoogleMap,
