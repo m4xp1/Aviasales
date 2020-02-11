@@ -13,7 +13,7 @@ fun LatLngBounds.contains(bounds: LatLngBounds): Boolean =
 fun LatLng.bearingTo(dest: LatLng): Float = SphericalUtil.computeHeading(this, dest).toFloat()
 
 fun Marker.animate(dest: LatLng, interpolator: LatLngInterpolator = Spherical()): ValueAnimator =
-    animate(listOf(dest), interpolator)
+    animate(listOf(position, dest), interpolator)
 
 fun Marker.animate(
     route: List<LatLng>,
@@ -21,9 +21,7 @@ fun Marker.animate(
 ): ValueAnimator {
     require(route.isNotEmpty()) { "Cannot animate marker on empty route" }
 
-    val positions = arrayListOf(position, *route.toTypedArray())
-    val values = (0..route.size).toList().map { it.toFloat() }
-
+    val values = route.indices.toList().map { it.toFloat() }
     val animator = ValueAnimator.ofFloat(*values.toFloatArray())
     animator.addUpdateListener { animation ->
         val value = animation.animatedValue as Float
@@ -33,12 +31,12 @@ fun Marker.animate(
 
         if (animation.currentPlayTime >= animation.duration) {
             position = interpolator.interpolate(
-                positions[index], route.last(), animation.animatedFraction
+                route[index], route.last(), animation.animatedFraction
             )
         } else {
-            position = interpolator.interpolate(positions[index], positions[index + 1], fraction)
+            position = interpolator.interpolate(route[index], route[index + 1], fraction)
             if (fraction != 1f) { // keep latest bearing
-                rotation = position.bearingTo(positions[index + 1])
+                rotation = position.bearingTo(route[index + 1])
             }
         }
     }
