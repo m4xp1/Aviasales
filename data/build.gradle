@@ -6,10 +6,14 @@ android {
     compileSdkVersion configuration.compileSdkVersion
     buildToolsVersion configuration.buildToolsVersion
 
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
+
     kapt {
         javacOptions {
-            option("--source", "8")
-            option("--target", "8")
+            option("--source", JavaVersion.VERSION_1_8)
+            option("--target", JavaVersion.VERSION_1_8)
         }
     }
 
