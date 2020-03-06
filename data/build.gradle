@@ -6,6 +6,13 @@ android {
     compileSdkVersion configuration.compileSdkVersion
     buildToolsVersion configuration.buildToolsVersion
 
+    kapt {
+        javacOptions {
+            option("--source", "8")
+            option("--target", "8")
+        }
+    }
+
     defaultConfig {
         minSdkVersion configuration.minSdkVersion
         targetSdkVersion configuration.targetSdkVersion
