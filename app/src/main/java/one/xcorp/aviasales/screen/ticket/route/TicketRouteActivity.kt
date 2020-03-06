@@ -100,20 +100,16 @@ class TicketRouteActivity : DidyActivity() {
     }
 
     private fun invalidateDepartureCompletion(items: List<CityModel>) =
-        invalidateCityCompletion(departureEdit, departureAdapter, items)
+        invalidateCityCompletion(departureAdapter, items)
 
     private fun invalidateDestinationCompletion(items: List<CityModel>) =
-        invalidateCityCompletion(destinationEdit, destinationAdapter, items)
+        invalidateCityCompletion(destinationAdapter, items)
 
     private fun invalidateCityCompletion(
-        edit: AutoCompleteTextView,
         adapter: CityAdapter,
         items: List<CityModel>
     ) {
         adapter.setItems(items)
-        if (edit.isPopupShowing) {
-            edit.refreshAutoCompleteResults()
-        }
     }
 
     private fun selectDepartureItem(position: Int) {
