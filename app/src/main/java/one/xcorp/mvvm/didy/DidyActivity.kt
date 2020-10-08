@@ -28,6 +28,7 @@ abstract class DidyActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         if (isFinishing) {
+            // For feature scope, multiply activities, call release into onActivityResult for first feature activity
             componentHolder?.release()
         }
         super.onDestroy()
